@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_sview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".radio">
+
+    <LinearLayout
+        android:id="@+id/playerSpace"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.media3.ui.PlayerView
+            android:id="@+id/player_view_m"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.80"
+            android:visibility="visible"
+            app:animation_enabled="true"
+            app:auto_show="true"
+            app:show_buffering="when_playing"
+            app:show_shuffle_button="true">
+
+
+        </androidx.media3.ui.PlayerView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.20"
+            android:background="?attr/colorSurfaceContainerHigh"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/title_main1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:autoText="true"
+                android:background="?attr/colorSurfaceContainerHigh"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center_vertical|fill_vertical"
+                android:letterSpacing="0.08"
+                android:paddingLeft="15dp"
+                android:text="Now Playing :"
+                android:textAlignment="gravity"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/title_main2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:autoText="true"
+                android:background="?attr/colorSurfaceContainerHigh"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center_vertical"
+                android:letterSpacing="0.08"
+                android:paddingRight="15sp"
+                android:text=" Nothing"
+                android:textAlignment="gravity"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcl_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/playerSpace" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
