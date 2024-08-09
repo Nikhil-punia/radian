@@ -10,8 +10,9 @@ public class PlayerContent{
     public String Genre;
     public String Channel;
     public String streamUrl;
+    public String q_url;
 
-    public PlayerContent(String title,String logo,String burl,String disc,Object lan,String genre,String channel,String stream_url){
+    public PlayerContent(String title,String logo,String burl,String disc,Object lan,String genre,String channel,String stream_url,String q_Url){
         this.Languages=lan;
         this.Background_Url=burl;
         this.Discription=disc;
@@ -20,7 +21,11 @@ public class PlayerContent{
         this.Genre=genre;
         this.Channel=channel;
         this.streamUrl=stream_url;
+        this.q_url=q_Url;
+    }
 
+    public String getQ_url() {
+        return q_url;
     }
 
     public String getLogo() {

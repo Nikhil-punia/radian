@@ -5,6 +5,8 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.View;
+import android.widget.ProgressBar;
 
 
 import androidx.activity.EdgeToEdge;
@@ -37,6 +39,7 @@ public class radio extends AppCompatActivity {
     private recyclerViewAdapter rcView ;
     private int Position = 0;
     ArrayList<PlayerContent> dataSet;
+    ProgressBar progBar ;
 
 
     @OptIn(markerClass = UnstableApi.class)
@@ -53,6 +56,8 @@ public class radio extends AppCompatActivity {
             return insets;
         });
 
+        this.progBar=findViewById(R.id.loadbar_radio);
+
         TypedValue typedValue = new TypedValue();
         this.getTheme().resolveAttribute(com.google.android.material.R.attr.colorSurfaceContainerHigh,typedValue,true);
 
@@ -62,9 +67,13 @@ public class radio extends AppCompatActivity {
         rq.findCountryRadios(100,1,"India", (result) -> {
             try {
                 Position = 0;
+                progBar.setProgress(0);
+                progBar.setVisibility(View.VISIBLE);
+                progBar.setMax(result.length());
+
                 dataSet = new ArrayList<>();
+
                 loopAndSaveChannels(result);
-                updateUi(result);
             } catch (JSONException | IOException e) {
                 throw new RuntimeException(e);
             }
@@ -73,7 +82,7 @@ public class radio extends AppCompatActivity {
     }
 
 
-    public void loopAndSaveChannels(JSONArray stations) throws JSONException {
+    public void loopAndSaveChannels(JSONArray stations) throws JSONException, IOException {
         if (Position < stations.length()) {
             String url_f = "https://zeno.fm/_next/data/ZyoucVrauhoqKBWqBepDH/radio/" + stations.getJSONObject(Position).getString("url").split("/")[4] + ".json";
             rq.sendRequestObj(url_f, (result) -> {
@@ -82,22 +91,22 @@ public class radio extends AppCompatActivity {
                         JSONObject b_j = result.getJSONObject("pageProps").getJSONObject("station");
                         JSONObject b_o = result.getJSONObject("pageProps").getJSONObject("meta");
 
-                        System.out.println("===================");
 
                         String uri_t = (b_j.getString("streamURL"));
-                        PlayerContent plc = new PlayerContent(b_j.getString("name"), b_j.getString("logo"), b_j.getString("background"), b_o.getString("description"), b_j.getJSONArray("languages"), b_j.getString("genre"), stations.getJSONObject(Position).getString("name"), uri_t);
+                        PlayerContent plc = new PlayerContent(b_j.getString("name"), b_j.getString("logo"), b_j.getString("background"), b_o.getString("description"), b_j.getJSONArray("languages"), b_j.getString("genre"), stations.getJSONObject(Position).getString("name"), uri_t,stations.getJSONObject(Position).getString("url"));
                         dataSet.add(plc);
                     }
 
                     Position++;
+                    progBar.setProgress(Position);
                     loopAndSaveChannels(stations);
-                } catch (JSONException e) {
+                } catch (JSONException | IOException e) {
                     System.out.println(e);
                 }
             });
         }else {
-            System.out.println("-----------------------------------");
-            System.out.println(dataSet);
+            progBar.setVisibility(View.GONE);
+            updateUi(dataSet);
         }
     }
 
@@ -109,7 +118,7 @@ public class radio extends AppCompatActivity {
 
     }
 
-    public void updateUi(JSONArray resp) throws JSONException, IOException {
+    public void updateUi(ArrayList<PlayerContent> resp) throws JSONException, IOException {
         rcView = new recyclerViewAdapter(resp,this,findViewById(R.id.player_view_m),findViewById(R.id.main_sview));
         RecyclerView recyclerView = findViewById(R.id.rcl_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this,2));

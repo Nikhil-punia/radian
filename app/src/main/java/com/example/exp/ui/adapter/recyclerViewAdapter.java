@@ -37,19 +37,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Function;
 
 
 public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapter.ViewHolder> {
-    private final JSONArray data;
+    private final ArrayList<PlayerContent> data;
     private final Context ctx;
     private final Player player;
     private final View sView;
     private final volleyRequestData rq ;
     public int saltid = 2752;
 
-    public recyclerViewAdapter (JSONArray data , Context context, PlayerView playerview, View tis) {
+    public recyclerViewAdapter (ArrayList<PlayerContent> data , Context context, PlayerView playerview, View tis) {
         this.data = data;
         this.ctx = context;
         this.sView = tis;
@@ -66,14 +67,10 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        try {
-            holder.imgView.setVisibility(View.INVISIBLE);
-            holder.textView.setText(this.data.getJSONObject(position).getString("name"));
-            holder.itemView.setId(saltid+position);
-            setTheLogo(this.data.getJSONObject(position).getString("logo"),holder);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
+        holder.imgView.setVisibility(View.INVISIBLE);
+        holder.textView.setText(this.data.get(position).getChannel());
+        holder.itemView.setId(saltid+position);
+        setTheLogo(this.data.get(position).getLogo(),holder);
     }
 
     @SuppressLint("ResourceType")
@@ -91,7 +88,7 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        return this.data.length();
+        return this.data.size();
     }
 
 
@@ -107,53 +104,27 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
 
             view.setOnClickListener((v)->{
                 try {
-                    if(sView.findViewById((Integer) v.getId()-1)!=null){
-                        setCards(v.getId()-saltid-1,this,"b");
-                    }
-                    if(sView.findViewById((Integer) v.getId()+1)!=null){
-                        setCards(v.getId()-saltid+1,this,"f");
-                    }
-                    setCards(v.getId()-saltid,this,null);
-
+                    setCards(v.getId()-saltid,this);
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
             });
+
         }
-    }
 
-    public void setCards(int position,ViewHolder holder,String setMI) throws JSONException {
-        String url_f = "https://zeno.fm/_next/data/ZyoucVrauhoqKBWqBepDH/radio/"+ this.data.getJSONObject(position).getString("url").split("/")[4]+".json";
-            rq.sendRequestObj(url_f, (result) -> {
-                try {
-                    if (result != null) {
-                        JSONObject b_j = result.getJSONObject("pageProps").getJSONObject("station");
-                        JSONObject b_o = result.getJSONObject("pageProps").getJSONObject("meta");
 
-                        String uri_t = (b_j.getString("streamURL"));
-                        PlayerContent plc = new PlayerContent(b_j.getString("name"), b_j.getString("logo"), b_j.getString("background"), b_o.getString("description"), b_j.getJSONArray("languages"), b_j.getString("genre"),this.data.getJSONObject(position).getString("name"),uri_t);
+    public void setCards(int position,ViewHolder holder) throws JSONException {
 
-                        if (this.data.get(position)!=null) {
-                            Object[] tagSet = {this.data.getJSONObject(position).getString("url"), position, uri_t, plc,true};
+                        if (data.get(position)!=null) {
+                            Object[] tagSet = {data.get(position).getQ_url(), position, data.get(position).getStreamUrl(), data.get(position),true};
+
                             holder.itemView.setTag(tagSet);
-
                             player.setCurrentItem(holder);
 
-                            if (setMI == null) {
-                                player.StartPlay(uri_t, plc,holder);
-                            }
-
+                            player.StartPlay(data.get(position).getStreamUrl(), data.get(position),holder);
                         }
-                    } else {
-                            this.data.remove(position);
-                            notifyItemRemoved(position);
-                            notifyItemRangeChanged(position, 1);
-                    }
-                } catch (JSONException e) {
-                    System.out.println(e);
-                }
-            });
         }
+    }
 
 
 
