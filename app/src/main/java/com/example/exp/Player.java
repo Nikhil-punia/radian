@@ -6,12 +6,14 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,7 +41,7 @@ import androidx.media3.ui.PlayerView;
 
 import com.example.exp.ui.adapter.recyclerViewAdapter;
 
-public class Player  {
+public class Player extends Service {
 
 
         private final ExoPlayer playerg;
@@ -222,6 +224,10 @@ public class Player  {
     }
 
 
-
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 }
 

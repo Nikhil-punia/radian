@@ -113,8 +113,6 @@ public class radio extends AppCompatActivity {
                     throw new RuntimeException(e);
                 }
             });
-
-
     }
 
     protected void onDestroy() {

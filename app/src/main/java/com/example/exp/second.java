@@ -20,7 +20,13 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.datasource.DataSource;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.MediaStyleNotificationHelper;
 import androidx.media3.session.SessionToken;
@@ -53,7 +59,7 @@ public class second extends AppCompatActivity {
         PlayerView playerView = findViewById(R.id.player_view_m);
 
         SessionToken sessionToken =
-                new SessionToken(this, new ComponentName(this, PlayerService.class));
+                new SessionToken(this, new ComponentName(this, MediaSessionService.class));
 
         ListenableFuture<MediaController> controllerFuture =
                 new MediaController.Builder(this, sessionToken).buildAsync();
@@ -90,6 +96,17 @@ public class second extends AppCompatActivity {
             // attached to the PlayerView UI component.
             try {
                 playerView.setPlayer(controllerFuture.get());
+                MediaController playerg =  controllerFuture.get();
+                DataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
+//              HlsMediaSource hlsMediaSourc = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
+                MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri("https://stream-149.zeno.fm/nhrtcxg09u8uv?zt=eyJhbGciOiJIUzI1NiJ9.eyJzdHJlYW0iOiJuaHJ0Y3hnMDl1OHV2IiwiaG9zdCI6InN0cmVhbS0xNDkuemVuby5mbSIsInJ0dGwiOjUsImp0aSI6Ik0yTW5SYjhXVFNPZld2RDM1c285bWciLCJpYXQiOjE3MjMyODYxMDEsImV4cCI6MTcyMzI4NjE2MX0.ZO55nfdzh1O5V4GvS_cLj4nRomy9WUeaFBxL0e3Ih8w"));
+
+                MediaItem tef = mediaSource.getMediaItem();
+
+                playerg.setMediaItem(tef);
+                playerg.prepare();
+                playerg.play();
+
             } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             } catch (InterruptedException e) {

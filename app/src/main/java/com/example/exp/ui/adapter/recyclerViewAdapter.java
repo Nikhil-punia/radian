@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.exp.PlayerContent;
+import com.example.exp.PlayerService;
 import com.example.exp.R;
 import com.example.exp.Singleton;
 import com.example.exp.Player;
@@ -45,7 +46,7 @@ import java.util.function.Function;
 public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapter.ViewHolder> {
     private final ArrayList<PlayerContent> data;
     private final Context ctx;
-    private final Player player;
+    private final PlayerService player;
     private final View sView;
     private final volleyRequestData rq ;
     public int saltid = 2752;
@@ -55,7 +56,7 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
         this.ctx = context;
         this.sView = tis;
         this.rq = new volleyRequestData(this.ctx);
-        this.player = new Player(context,playerview,sView);
+        this.player = new PlayerService(context,playerview,sView);
     }
 
     @NonNull
@@ -129,9 +130,7 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
 
 
     public void destroyPlayer(){
-        player.clearMediaNotificaton();
-        player.releasePlayer();
-        player.releaseSession();
+        player.discardService();
     }
 
 
