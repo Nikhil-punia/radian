@@ -73,7 +73,10 @@ public class radio extends AppCompatActivity {
 
                 dataSet = new ArrayList<>();
 
-                loopAndSaveChannels(result);
+                for (int i = 0; i < result.length(); i++) {
+                    loopAndSaveChannels(result,i);
+                }
+
             } catch (JSONException | IOException e) {
                 throw new RuntimeException(e);
             }
@@ -82,32 +85,36 @@ public class radio extends AppCompatActivity {
     }
 
 
-    public void loopAndSaveChannels(JSONArray stations) throws JSONException, IOException {
-        if (Position < stations.length()) {
-            String url_f = "https://zeno.fm/_next/data/ZyoucVrauhoqKBWqBepDH/radio/" + stations.getJSONObject(Position).getString("url").split("/")[4] + ".json";
+    public void loopAndSaveChannels(JSONArray stations,int index) throws JSONException, IOException {
+
+            String url_f = "https://zeno.fm/_next/data/ZyoucVrauhoqKBWqBepDH/radio/" + stations.getJSONObject(index).getString("url").split("/")[4] + ".json";
             rq.sendRequestObj(url_f, (result) -> {
                 try {
                     if (result != null) {
                         JSONObject b_j = result.getJSONObject("pageProps").getJSONObject("station");
                         JSONObject b_o = result.getJSONObject("pageProps").getJSONObject("meta");
 
-
                         String uri_t = (b_j.getString("streamURL"));
-                        PlayerContent plc = new PlayerContent(b_j.getString("name"), b_j.getString("logo"), b_j.getString("background"), b_o.getString("description"), b_j.getJSONArray("languages"), b_j.getString("genre"), stations.getJSONObject(Position).getString("name"), uri_t,stations.getJSONObject(Position).getString("url"));
+                        PlayerContent plc = new PlayerContent(b_j.getString("name"), b_j.getString("logo"), b_j.getString("background"), b_o.getString("description"), b_j.getJSONArray("languages"), b_j.getString("genre"), stations.getJSONObject(index).getString("name"), uri_t,stations.getJSONObject(index).getString("url"));
                         dataSet.add(plc);
                     }
 
                     Position++;
                     progBar.setProgress(Position);
-                    loopAndSaveChannels(stations);
-                } catch (JSONException | IOException e) {
+
+                    if (Position==(stations.length()-1)){
+                        progBar.setVisibility(View.GONE);
+                        updateUi(dataSet);
+                    }
+
+                } catch (JSONException e) {
                     System.out.println(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             });
-        }else {
-            progBar.setVisibility(View.GONE);
-            updateUi(dataSet);
-        }
+
+
     }
 
     protected void onDestroy() {
@@ -115,7 +122,6 @@ public class radio extends AppCompatActivity {
         if (rcView != null) {
             rcView.destroyPlayer();
         }
-
     }
 
     public void updateUi(ArrayList<PlayerContent> resp) throws JSONException, IOException {
