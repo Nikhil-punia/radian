@@ -1,22 +1,11 @@
 package com.example.exp;
 
-import static java.security.AccessController.getContext;
-
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -24,11 +13,9 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DefaultHttpDataSource;
-import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.session.MediaController;
-import androidx.media3.session.MediaStyleNotificationHelper;
 import androidx.media3.session.SessionToken;
 import androidx.media3.ui.PlayerView;
 
@@ -59,7 +46,7 @@ public class second extends AppCompatActivity {
         PlayerView playerView = findViewById(R.id.player_view_m);
 
         SessionToken sessionToken =
-                new SessionToken(this, new ComponentName(this, MediaSessionService.class));
+                new SessionToken(this, new ComponentName(this, MediaSesService.class));
 
         ListenableFuture<MediaController> controllerFuture =
                 new MediaController.Builder(this, sessionToken).buildAsync();

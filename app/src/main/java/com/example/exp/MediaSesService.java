@@ -6,7 +6,8 @@ import androidx.annotation.Nullable;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.session.MediaSession;
 
-public class MediaSessionService extends androidx.media3.session.MediaSessionService {
+
+public class MediaSesService extends androidx.media3.session.MediaSessionService  {
     private MediaSession mediaSession = null;
 
     // Create your Player and MediaSession in the onCreate lifecycle event
@@ -15,7 +16,10 @@ public class MediaSessionService extends androidx.media3.session.MediaSessionSer
         super.onCreate();
         ExoPlayer player = new ExoPlayer.Builder(this).build();
         mediaSession = new MediaSession.Builder(this, player).build();
-    }
+
+
+
+                }
 
     @Nullable
     @Override

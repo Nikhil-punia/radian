@@ -1,10 +1,5 @@
 package com.example.exp;
 
-import static androidx.media3.common.Player.COMMAND_SEEK_TO_NEXT;
-import static androidx.media3.common.Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM;
-import static androidx.media3.common.Player.COMMAND_SEEK_TO_PREVIOUS;
-import static androidx.media3.common.Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM;
-
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,10 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.core.app.NotificationCompat;
-import androidx.media3.common.ForwardingPlayer;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Metadata;
@@ -27,12 +20,10 @@ import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.DataSource;
 import androidx.media3.datasource.DefaultHttpDataSource;
-import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.MediaSession;
-import androidx.media3.session.MediaSessionService;
 import androidx.media3.session.MediaStyleNotificationHelper;
 import androidx.media3.session.SessionToken;
 import androidx.media3.ui.PlayerView;
@@ -75,15 +66,15 @@ public class PlayerService {
         this.initializeMediaNotification();
         this.initializeArtWork();
 
-        SessionToken sessionToken = new SessionToken(this.ctx, new ComponentName(this.ctx, com.example.exp.MediaSessionService.class));
+        SessionToken sessionToken = new SessionToken(this.ctx, new ComponentName(this.ctx, MediaSesService.class));
         this.controllerFuture = new MediaController.Builder(this.ctx, sessionToken).buildAsync();
 
         controllerFuture.addListener(() -> {
             try {
-                this.playUi.setPlayer(controllerFuture.get());
                 this.playerg=(Player) controllerFuture.get();
+                this.setPlayerListner(this.playerg);
+                this.playUi.setPlayer(this.playerg);
 
-                this.setPlayerListner(playerg);
             } catch (ExecutionException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -94,14 +85,10 @@ public class PlayerService {
 
     @OptIn(markerClass = UnstableApi.class)
     public void setPlayerListner(Player player){
+
         player.addListener(
                 new androidx.media3.common.Player.Listener() {
                     @SuppressLint("ResourceType")
-                    @Override
-                    public void onPlaybackStateChanged(int playbackState) {
-                        Player.Listener.super.onPlaybackStateChanged(playbackState);
-                    }
-
 
                     @Override
                     public void onMediaMetadataChanged(MediaMetadata mediaMetadata) {
@@ -119,6 +106,7 @@ public class PlayerService {
 
                         }
                     }
+
                 }) ;
     }
 
@@ -182,7 +170,6 @@ public class PlayerService {
 
     public void setPlayingTitle(String Title){
             this.curTitle = Title;
-            playerg.replaceMediaItem(playerg.getCurrentMediaItemIndex(),playerg.getCurrentMediaItem().buildUpon().setMediaMetadata(playerg.getMediaMetadata().buildUpon().setTitle(Title).build()).build());
             TextView mt = otherUi.findViewById(R.id.title_main2);
             mt.setText(Title);
     }
