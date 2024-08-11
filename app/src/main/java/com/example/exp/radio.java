@@ -2,8 +2,10 @@ package com.example.exp;
 
 
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -15,13 +17,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 
+import androidx.media3.datasource.DataSource;
+import androidx.media3.datasource.DefaultHttpDataSource;
+import androidx.media3.exoplayer.source.MediaSource;
+import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.exp.ui.adapter.recyclerViewAdapter;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +39,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 public class radio extends AppCompatActivity {
@@ -38,8 +50,11 @@ public class radio extends AppCompatActivity {
     private final volleyRequestData rq = new volleyRequestData(this);
     private recyclerViewAdapter rcView ;
     private int Position = 0;
+    private PlayerService player;
     ArrayList<PlayerContent> dataSet;
     ProgressBar progBar ;
+    private Player playerg;
+    List<MediaItem> mediaItm = null;
 
 
     @OptIn(markerClass = UnstableApi.class)
@@ -56,6 +71,7 @@ public class radio extends AppCompatActivity {
             return insets;
         });
 
+        this.mediaItm =new ArrayList<MediaItem>();
         this.progBar=findViewById(R.id.loadbar_radio);
 
         TypedValue typedValue = new TypedValue();
@@ -95,8 +111,10 @@ public class radio extends AppCompatActivity {
                         JSONObject b_o = result.getJSONObject("pageProps").getJSONObject("meta");
 
                         String uri_t = (b_j.getString("streamURL"));
+
                         PlayerContent plc = new PlayerContent(b_j.getString("name"), b_j.getString("logo"), b_j.getString("background"), b_o.getString("description"), b_j.getJSONArray("languages"), b_j.getString("genre"), stations.getJSONObject(index).getString("name"), uri_t,stations.getJSONObject(index).getString("url"));
                         dataSet.add(plc);
+                        addMediaItems(plc);
                     }
 
                     Position++;
@@ -115,15 +133,18 @@ public class radio extends AppCompatActivity {
             });
     }
 
-    protected void onDestroy() {
-        super.onDestroy();
-        if (rcView != null) {
-            rcView.destroyPlayer();
-        }
-    }
+
 
     public void updateUi(ArrayList<PlayerContent> resp) throws JSONException, IOException {
-        rcView = new recyclerViewAdapter(resp,this,findViewById(R.id.player_view_m),findViewById(R.id.main_sview));
+
+        this.player = new PlayerService(this, findViewById(R.id.player_view_m) , findViewById(R.id.main_sview));
+
+        this.player.getControllerFuture().addListener(() ->{
+            this.player.getPlayer().addMediaItems(mediaItm);
+            this.player.setDataSet(resp);
+            }, MoreExecutors.directExecutor());
+
+        rcView = new recyclerViewAdapter(resp,this,this.player);
         RecyclerView recyclerView = findViewById(R.id.rcl_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this,2));
         recyclerView.setAdapter(this.rcView);
@@ -131,12 +152,47 @@ public class radio extends AppCompatActivity {
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
     }
 
+    @OptIn(markerClass = UnstableApi.class)
+    public void addMediaItems(PlayerContent data){
+        DataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
+//      HlsMediaSource hlsMediaSourc = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
+
+        MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(data.getStreamUrl()));
+        MediaItem tef = mediaSource.getMediaItem().buildUpon().setMediaMetadata(setPlayerContents(data)).setMediaId(Integer.toString(dataSet.size()-1)).build();
+
+        mediaItm.add(tef);
+
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    public MediaMetadata setPlayerContents(PlayerContent meta){
+        MediaMetadata.Builder mdt = new MediaMetadata.Builder();
+        mdt.setArtist(meta.getChannel());
+//      mdt.setDisplayTitle("display title");
+        mdt.setAlbumTitle(meta.Title);
+        mdt.setGenre(meta.Genre);
+        mdt.setDescription(meta.Discription);
+        mdt.setArtworkUri(Uri.parse(meta.Background_Url));
+        return mdt.build();
+    }
 
     public Object getComponents(int id){
         return findViewById(id);
     }
 
 
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (rcView != null) {
+            rcView.destroyPlayer();
+        }
+
+        player=null;
+        playerg=null;
+        dataSet=null;
+        mediaItm=null;
+    }
 
 
 

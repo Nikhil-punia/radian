@@ -26,19 +26,18 @@ import java.util.ArrayList;
 
 
 public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapter.ViewHolder> {
-    private final ArrayList<PlayerContent> data;
+    private ArrayList<PlayerContent> data;
     private final Context ctx;
-    private final PlayerService player;
-    private final View sView;
+    private PlayerService player;
     private final volleyRequestData rq ;
     public int saltid = 2752;
 
-    public recyclerViewAdapter (ArrayList<PlayerContent> data , Context context, PlayerView playerview, View tis) {
+    public recyclerViewAdapter (ArrayList<PlayerContent> data , Context context,PlayerService player) {
         this.data = data;
         this.ctx = context;
-        this.sView = tis;
+
         this.rq = new volleyRequestData(this.ctx);
-        this.player = new PlayerService(context,playerview,sView);
+        this.player = player;
     }
 
     @NonNull
@@ -101,10 +100,14 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
                         if (data.get(position)!=null) {
                             Object[] tagSet = {data.get(position).getQ_url(), position, data.get(position).getStreamUrl(), data.get(position),true};
 
+
+                                System.out.println("--------------------------");
+                                System.out.println(data.get(position).getQ_url());
+
                             holder.itemView.setTag(tagSet);
                             player.setCurrentItem(holder);
 
-                            player.StartPlay(data.get(position).getStreamUrl(), data.get(position),holder);
+                            player.StartPlay(position, data.get(position),holder);
                         }
         }
     }
@@ -112,7 +115,9 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
 
 
     public void destroyPlayer(){
+        this.data=null;
         player.discardService();
+        this.player=null;
     }
 
 

@@ -32,6 +32,7 @@ import com.example.exp.ui.adapter.recyclerViewAdapter;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class PlayerService {
@@ -51,6 +52,7 @@ public class PlayerService {
     private PlayerContent playData;
     private ListenableFuture<MediaController> controllerFuture;
     private MediaSession mediaSession;
+    private ArrayList<PlayerContent> dataSet=null;
 
     private NotificationManager ntm;
     private NotificationCompat.Builder Nbuilder;
@@ -62,6 +64,7 @@ public class PlayerService {
         this.ctx=context;
         this.otherUi = otherUi;
         this.rq = new volleyRequestData(this.ctx);
+        dataSet=null;
 
         this.initializeMediaNotification();
         this.initializeArtWork();
@@ -83,6 +86,18 @@ public class PlayerService {
 
     }
 
+    public void setDataSet(ArrayList<PlayerContent> plc) {
+        this.dataSet=plc;
+    }
+
+    public Player getPlayer() {
+        return playerg;
+    }
+
+    public ListenableFuture<MediaController> getControllerFuture() {
+        return controllerFuture;
+    }
+
     @OptIn(markerClass = UnstableApi.class)
     public void setPlayerListner(Player player){
 
@@ -93,15 +108,12 @@ public class PlayerService {
                     @Override
                     public void onMediaMetadataChanged(MediaMetadata mediaMetadata) {
                         Player.Listener.super.onMediaMetadataChanged(mediaMetadata);
-
-                        System.out.println(mediaMetadata.title);
-
                         Object ty = mediaMetadata.title;
                         if (ty != null) {
                             setPlayingTitle(ty.toString());
 
-                            if (metaurl != null) {
-                                setArtWork(metaurl);
+                            if (dataSet.get(playerg.getCurrentMediaItemIndex()) != null) {
+                                setArtWork(dataSet.get(playerg.getCurrentMediaItemIndex()).Background_Url);
                             }
 
                         }
@@ -112,25 +124,23 @@ public class PlayerService {
 
 
     @OptIn(markerClass = UnstableApi.class)
-    public  void StartPlay(String uri, PlayerContent meta, recyclerViewAdapter.ViewHolder view){
-        DataSource.Factory dataSourceFactory = new DefaultHttpDataSource.Factory();
-//      HlsMediaSource hlsMediaSourc = new HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
-        MediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(uri));
+    public  void StartPlay(int index, PlayerContent meta, recyclerViewAdapter.ViewHolder view){
 
         if (playerg.isPlaying()){
             Toast.makeText(ctx, "Playing", Toast.LENGTH_SHORT).show();
         }
 
-        this.metaurl=meta.Background_Url;
-        this.currentItem = view;
-        this.playData=meta;
+        setCurrentItems(meta,view);
 
-        MediaItem tef = mediaSource.getMediaItem().buildUpon().setMediaMetadata(setPlayerContents(meta)).build();
-
-        playerg.setMediaItem(tef);
+        playerg.seekToDefaultPosition(index);
         playerg.prepare();
         playerg.play();
 
+    }
+
+    public void setCurrentItems(PlayerContent meta, recyclerViewAdapter.ViewHolder view){
+        this.playData=meta;
+        this.currentItem = view;
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -196,10 +206,10 @@ public class PlayerService {
     }
 
 
-
-
     public void discardService(){
         if (playerg != null) {
+            playerg.clearMediaItems();
+            playerg.release();
             MediaController.releaseFuture(controllerFuture);
         }
     }
