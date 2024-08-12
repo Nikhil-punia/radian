@@ -7,15 +7,18 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.net.Uri;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.core.app.NotificationCompat;
+import androidx.media3.common.DeviceInfo;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Metadata;
+import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.DataSource;
@@ -46,13 +49,16 @@ public class PlayerService {
     private final int notificId =  (int)(Math.random()*1000);
     private String mdsId = Integer.toString((int) (Math.random()*1000));
 
+    private int salt;
+    public int currIndex ;
     private String curTitle = null;
     private String metaurl = null;
-    private recyclerViewAdapter.ViewHolder currentItem;
+    private View currentItem;
     private PlayerContent playData;
     private ListenableFuture<MediaController> controllerFuture;
     private MediaSession mediaSession;
     private ArrayList<PlayerContent> dataSet=null;
+    private ViewGroup parentToAll;
 
     private NotificationManager ntm;
     private NotificationCompat.Builder Nbuilder;
@@ -110,44 +116,55 @@ public class PlayerService {
                         Player.Listener.super.onMediaMetadataChanged(mediaMetadata);
                         Object ty = mediaMetadata.title;
                         if (ty != null) {
-                            setPlayingTitle(ty.toString());
-
                             if (dataSet.get(playerg.getCurrentMediaItemIndex()) != null) {
+                                setPlayingTitle(ty.toString());
                                 setArtWork(dataSet.get(playerg.getCurrentMediaItemIndex()).Background_Url);
+                                currIndex = playerg.getCurrentMediaItemIndex();
+                                currentItem = parentToAll.findViewById(currIndex+salt);
                             }
+                        }
+                    }
 
+                    @Override
+                    public void onPlayerError(PlaybackException error) {
+                        Player.Listener.super.onPlayerError(error);
+                        if (error.errorCode==2004){
+                            Toast.makeText(ctx, "Error Playing , Playing Next", Toast.LENGTH_SHORT).show();
+                            if (playerg.hasNextMediaItem()) {
+                                startPlay(playerg.getNextMediaItemIndex());
+                            }else{
+                                startPlay(playerg.getNextMediaItemIndex());
+                            }
                         }
                     }
 
                 }) ;
     }
 
+    public void setParentToAll(ViewGroup parentToAll) {
+        this.parentToAll = parentToAll;
+    }
+
+    public void setSalt(int salt) {
+        this.salt = salt;
+    }
 
     @OptIn(markerClass = UnstableApi.class)
-    public  void StartPlay(int index, PlayerContent meta, recyclerViewAdapter.ViewHolder view){
+    public void startPlay(int index){
 
         if (playerg.isPlaying()){
             Toast.makeText(ctx, "Playing", Toast.LENGTH_SHORT).show();
         }
-
-        setCurrentItems(meta,view);
-
         playerg.seekToDefaultPosition(index);
         playerg.prepare();
         playerg.play();
-
-    }
-
-    public void setCurrentItems(PlayerContent meta, recyclerViewAdapter.ViewHolder view){
-        this.playData=meta;
-        this.currentItem = view;
     }
 
     @OptIn(markerClass = UnstableApi.class)
     public MediaMetadata setPlayerContents(PlayerContent meta){
         MediaMetadata.Builder mdt = new MediaMetadata.Builder();
         mdt.setArtist(meta.getChannel());
-//        mdt.setDisplayTitle("display title");
+//      mdt.setDisplayTitle("display title");
         mdt.setAlbumTitle(meta.Title);
         mdt.setGenre(meta.Genre);
         mdt.setDescription(meta.Discription);
@@ -214,9 +231,6 @@ public class PlayerService {
         }
     }
 
-    public void setCurrentItem(recyclerViewAdapter.ViewHolder view){
-        currentItem=view;
-    }
 
 }
 

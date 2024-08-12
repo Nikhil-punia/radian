@@ -31,6 +31,7 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
     private PlayerService player;
     private final volleyRequestData rq ;
     public int saltid = 2752;
+    public ViewGroup parentToAll;
 
     public recyclerViewAdapter (ArrayList<PlayerContent> data , Context context,PlayerService player) {
         this.data = data;
@@ -38,12 +39,15 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
 
         this.rq = new volleyRequestData(this.ctx);
         this.player = player;
+        this.player.setSalt(saltid);
     }
 
     @NonNull
     @Override
     public recyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.card, parent, false);
+        this.parentToAll = parent;
+        player.setParentToAll(parent);
         return new ViewHolder(rowItem);
     }
 
@@ -96,18 +100,9 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
 
 
     public void setCards(int position,ViewHolder holder) throws JSONException {
-
                         if (data.get(position)!=null) {
-                            Object[] tagSet = {data.get(position).getQ_url(), position, data.get(position).getStreamUrl(), data.get(position),true};
-
-
-                                System.out.println("--------------------------");
-                                System.out.println(data.get(position).getQ_url());
-
-                            holder.itemView.setTag(tagSet);
-                            player.setCurrentItem(holder);
-
-                            player.StartPlay(position, data.get(position),holder);
+                            holder.itemView.setTag(data.get(position));
+                            player.startPlay(position);
                         }
         }
     }
