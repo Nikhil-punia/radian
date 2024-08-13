@@ -15,9 +15,11 @@ public class Singleton {
     private RequestQueue requestQueue;
     private static Context ctx;
     private ImageLoader imageLoader;
+    private RequestQueue rq;
 
     public Singleton(Context ctx) {
         Singleton.ctx = ctx;
+        rq = Volley.newRequestQueue(ctx.getApplicationContext());
 
         imageLoader = new ImageLoader(requestQueue,
                 new ImageLoader.ImageCache() {
@@ -34,6 +36,8 @@ public class Singleton {
                         cache.put(url, bitmap);
                     }
                 });
+
+
     }
 
 
@@ -45,13 +49,17 @@ public class Singleton {
         return instance;
     }
 
+    public void cancelRequests(){
+        rq.cancelAll(request -> true);
+    }
+
     public RequestQueue getRequestQueue() {
-        if (requestQueue == null) {
+        if (rq == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
-            requestQueue = Volley.newRequestQueue(ctx.getApplicationContext());
+            rq = Volley.newRequestQueue(ctx.getApplicationContext());
         }
-        return requestQueue;
+        return rq;
     }
     public ImageLoader getImageLoader() {
         return imageLoader;

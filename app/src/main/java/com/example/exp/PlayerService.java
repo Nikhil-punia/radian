@@ -47,16 +47,13 @@ public class PlayerService {
     private final volleyRequestData rq;
     private ImageView artWork;
     private final int notificId =  (int)(Math.random()*1000);
-    private String mdsId = Integer.toString((int) (Math.random()*1000));
+
 
     private int salt;
     public int currIndex ;
     private String curTitle = null;
-    private String metaurl = null;
     private View currentItem;
-    private PlayerContent playData;
     private ListenableFuture<MediaController> controllerFuture;
-    private MediaSession mediaSession;
     private ArrayList<PlayerContent> dataSet=null;
     private ViewGroup parentToAll;
 

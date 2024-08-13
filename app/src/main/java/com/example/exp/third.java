@@ -10,6 +10,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+
 public class third extends AppCompatActivity {
 
     @Override
@@ -23,11 +24,7 @@ public class third extends AppCompatActivity {
             return insets;
         });
 
-        Intent intent = getIntent();
-        String Text = intent.getStringExtra(MainActivity.MSG);
 
-        TextView textView = findViewById(R.id.showText);
-        textView.setText(Text);
 
     }
 }

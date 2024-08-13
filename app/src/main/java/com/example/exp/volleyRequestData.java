@@ -21,9 +21,12 @@ import java.io.IOException;
 public class volleyRequestData
 {
     Context ctx;
+    Singleton inst;
 
     public volleyRequestData(Context context){
+
         this.ctx=context;
+        this.inst=Singleton.getInstance(this.ctx);
     }
 
     private static final String TAG = "log";
@@ -60,7 +63,7 @@ public class volleyRequestData
                     Log.e(TAG,"Error in send Request"+error.toString());
                 });
 
-        Singleton.getInstance(this.ctx).addToRequestQueue(jsonArrayRequest);
+        inst.addToRequestQueue(jsonArrayRequest);
 
     }
 
@@ -70,7 +73,7 @@ public class volleyRequestData
             System.out.println("Error in getting the Radio Theme Work");
         });
 
-        Singleton.getInstance(this.ctx).addToRequestQueue(imageRequest);
+        inst.addToRequestQueue(imageRequest);
     }
 
 
@@ -84,7 +87,11 @@ public class volleyRequestData
                     System.out.println("Error in send Request Object"+error.toString());
                     callback.returnJsonObj(null);
                 });
-        Singleton.getInstance(this.ctx).addToRequestQueue(jsonObjectRequest);
+        inst.addToRequestQueue(jsonObjectRequest);
+    }
+
+    public void cancelAllRequest(){
+        inst.cancelRequests();
     }
 
 

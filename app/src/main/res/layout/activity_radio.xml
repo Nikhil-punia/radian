@@ -74,7 +74,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:padding="2.5dp">
+            android:padding="2.5dp"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/button2"

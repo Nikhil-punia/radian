@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.media3.ui.PlayerView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.widget.ImageView;
@@ -85,8 +84,8 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
         public ViewHolder(View view) {
             super(view);
 
-            this.textView = view.findViewById(R.id.r_name);
-            this.imgView = view.findViewById(R.id.rd_logo);
+            this.textView = view.findViewById(R.id.air_name);
+            this.imgView = view.findViewById(R.id.air_logo);
 
             view.setOnClickListener((v)->{
                 try {

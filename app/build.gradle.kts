@@ -2,11 +2,20 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+
 android {
     namespace = "com.example.exp"
     compileSdk = 34
 
+
+
     defaultConfig {
+
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
+
+
         applicationId = "com.example.exp"
         minSdk = 23
         targetSdk = 34
@@ -15,6 +24,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+
 
     buildTypes {
         release {
@@ -52,6 +63,8 @@ dependencies {
     implementation(libs.media3.session)
     implementation(libs.media3.exoplayer.hls)
     implementation(libs.volley)
+    implementation(libs.gradle)
+    implementation(libs.com.chaquo.python.gradle.plugin)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

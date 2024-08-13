@@ -18,6 +18,8 @@ navigationRuntime = "2.7.7"
 media3ExoplayerHls = "1.4.0"
 volley = "1.2.1"
 media3Session = "1.4.0"
+comChaquoPythonGradlePlugin = "15.0.1"
+gradle = "15.0.1"
 
 [libraries]
 cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
@@ -40,6 +42,8 @@ navigation-runtime = { group = "androidx.navigation", name = "navigation-runtime
 media3-exoplayer-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "media3ExoplayerHls" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3Session" }
+com-chaquo-python-gradle-plugin = { group = "com.chaquo.python", name = "com.chaquo.python.gradle.plugin", version.ref = "comChaquoPythonGradlePlugin" }
+gradle = { group = "com.chaquo.python", name = "gradle", version.ref = "gradle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

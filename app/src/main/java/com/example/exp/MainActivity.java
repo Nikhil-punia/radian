@@ -17,7 +17,6 @@ import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String MSG = "com.example.multiscreen.msg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,26 +56,39 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+
     }
 
     public void clickedButton(View view){
 
-
         if (view.getTag()!=null) {
 
-            Intent inttenta = new Intent(this, first.class);
+            findViewById(R.id.sbar).setVisibility(View.GONE);
+
+//            Intent inttenta = new Intent(this, first.class);
 
             if (Integer.parseInt(view.getTag().toString())==0) {
-                inttenta = new Intent(this, radio.class);
+//
+                if (getSupportFragmentManager().findFragmentByTag("radioz") == null) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.dview, Radio.getInstance(),"radioz")
+                            .commit();
+                }
+
+
             } else if (Integer.parseInt(view.getTag().toString())==1) {
-                inttenta = new Intent(this, second.class);
+                if (getSupportFragmentManager().findFragmentByTag("radioa") == null) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.dview, Air.getInstance(),"radioa")
+                            .commit();
+                }
             } else if (Integer.parseInt(view.getTag().toString())==2) {
-                inttenta = new Intent(this, third.class);
+//                inttenta = new Intent(this, third.class);
             }
 
-            Toast.makeText(MainActivity.this, view.getTag().toString()+" Clicked!", Toast.LENGTH_SHORT).show();
-            inttenta.putExtra(MSG,"Hello World from "+view.getTag().toString());
-            startActivity(inttenta);
+
 
 
         }
