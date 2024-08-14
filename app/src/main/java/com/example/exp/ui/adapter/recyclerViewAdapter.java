@@ -65,7 +65,7 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
                 holder.imgView.setImageBitmap(res);
                 holder.imgView.setVisibility(View.VISIBLE);
             }else {
-                holder.imgView.setImageResource(R.raw.k);
+                holder.imgView.setImageResource(R.drawable.side_nav_bar);
             }
         });
     }

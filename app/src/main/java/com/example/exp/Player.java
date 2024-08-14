@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -114,7 +115,7 @@ public class Player extends Service {
                                 if (resp!= null) {
                                     artWork.setImageBitmap(resp);
                                 }else {
-                                    artWork.setImageResource(R.raw.k);
+                                    artWork.setImageResource(R.drawable.side_nav_bar);
                                 }
 
                                 builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

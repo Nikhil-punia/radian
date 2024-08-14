@@ -5,14 +5,52 @@
     android:id="@+id/main_air"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Air" >
+    tools:context=".Air">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/main_air_view"
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/player_view_m"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="200dp"
+        android:layout_weight="0.75"
+        android:visibility="visible"
+        app:animation_enabled="true"
+        app:auto_show="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:show_buffering="when_playing"
+        app:show_shuffle_button="true"></androidx.media3.ui.PlayerView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/main_air_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pageio" />
+
+    <HorizontalScrollView
+        android:id="@+id/pageio"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:background="?attr/colorPrimary"
+        android:scrollbars="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/player_view_m"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:id="@+id/page_air"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

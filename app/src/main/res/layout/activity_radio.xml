@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/playerSpace"
         android:layout_width="0dp"
-        android:layout_height="300dp"
+        android:layout_height="250dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,82 +28,49 @@
             app:auto_show="true"
             app:show_buffering="when_playing"
             app:show_shuffle_button="true">
-
-
         </androidx.media3.ui.PlayerView>
+
+        <ProgressBar
+            android:id="@+id/loadbar_radio"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2.5dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.20"
-            android:background="?attr/colorSurfaceContainerHigh"
+            android:layout_weight="0.15"
+            android:background="?attr/colorPrimary"
             android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/title_main1"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:autoText="true"
-                android:background="?attr/colorSurfaceContainerHigh"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="center_vertical|fill_vertical"
-                android:letterSpacing="0.08"
-                android:paddingLeft="15dp"
-                android:text="Now Playing :"
-                android:textAlignment="gravity"
-                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/title_main2"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:autoText="true"
-                android:background="?attr/colorSurfaceContainerHigh"
+                android:background="?attr/colorPrimary"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center_vertical"
                 android:letterSpacing="0.08"
-                android:paddingRight="15sp"
-                android:text=" Nothing"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:text="@string/title_value"
                 android:textAlignment="gravity"
-                android:textSize="10sp" />
+                android:textSize="11sp" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="2.5dp"
-            android:visibility="gone">
-
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Button" />
-
-            <Button
-                android:id="@+id/button3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Button" />
         </LinearLayout>
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/loadbar_radio"
-        style="?android:attr/progressBarStyleHorizontal"
+    <View
+        android:id="@+id/divider"
         android:layout_width="match_parent"
-        android:layout_height="5dp"
-        app:layout_constraintBottom_toBottomOf="@+id/rcl_view"
+        android:layout_height="2dp"
+        android:background="@drawable/shadow"
+        android:elevation="1000dp"
+        app:layout_constraintBottom_toBottomOf="@+id/playerSpace"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playerSpace"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/playerSpace" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcl_view"
@@ -112,6 +79,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/playerSpace" />
+        app:layout_constraintTop_toBottomOf="@+id/playerSpace" >
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

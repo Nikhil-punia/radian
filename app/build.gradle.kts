@@ -11,9 +11,7 @@ android {
 
     defaultConfig {
 
-        ndk {
-            abiFilters += listOf("arm64-v8a", "x86_64")
-        }
+
 
 
         applicationId = "com.example.exp"

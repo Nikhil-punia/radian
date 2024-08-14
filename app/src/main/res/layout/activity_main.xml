@@ -13,7 +13,8 @@
         android:id="@+id/sbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="?attr/colorSurfaceContainerLow"
+        android:background="?attr/colorSurfaceContainerLowest"
+        android:elevation="10dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toTopOf="@+id/dview"
@@ -40,13 +41,14 @@
         android:id="@+id/tab_l"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurfaceContainerLow"
+        android:background="?attr/colorSurfaceContainerLowest"
+        android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dview"
-        app:tabPaddingBottom="20dp"
-        app:tabPaddingTop="15dp">
+        app:tabPaddingBottom="5dp"
+        app:tabPaddingTop="5dp">
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/tab_p"

@@ -6,6 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="15dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     app:cardElevation="10dp"
     app:cardMaxElevation="20dp"
     app:layout_constraintBottom_toBottomOf="parent"
@@ -32,7 +35,7 @@
             android:layout_weight="0.2"
             android:background="?attr/colorSurfaceContainer"
             android:fontFamily="cursive"
-            android:text="TextView"
+            android:text="@string/channel"
             android:textAlignment="center"
             android:textSize="24sp" />
     </LinearLayout>
