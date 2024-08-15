@@ -85,7 +85,6 @@ public class airadapter  extends RecyclerView.Adapter<airadapter.ViewHolder> {
 
     public void destroyPlayer(){
         data=null;
-        rq.cancelAllRequest();
         player.discardService();
         this.player=null;
     }

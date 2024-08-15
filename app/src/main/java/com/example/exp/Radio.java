@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 
 import android.net.Uri;
 
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -55,6 +57,8 @@ public class Radio extends Fragment {
     List<MediaItem> mediaItm = null;
     View v = null;
     Context ctx =null;
+    public ViewGroup pager;
+    private RecyclerView recyclerView;
 
 
     public static Radio getInstance() {
@@ -110,19 +114,16 @@ public class Radio extends Fragment {
 
     public void updateUi(ArrayList<PlayerContent> resp) throws JSONException, IOException {
 
-        this.player = new PlayerService(ctx, v.findViewById(R.id.player_view_m) , v.findViewById(R.id.title_main2));
-
         this.player.getControllerFuture().addListener(() ->{
+            this.player.getPlayer().clearMediaItems();
             this.player.getPlayer().addMediaItems(mediaItm);
             this.player.setDataSet(resp);
         }, MoreExecutors.directExecutor());
 
+
         rcView = new recyclerViewAdapter(resp,ctx,this.player);
-        RecyclerView recyclerView = v.findViewById(R.id.rcl_view);
-        recyclerView.setLayoutManager(new GridLayoutManager(ctx,2));
         recyclerView.setAdapter(this.rcView);
-        recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
-        recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.HORIZONTAL));
+
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -154,8 +155,8 @@ public class Radio extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroyView() {
+        super.onDestroyView();
         if (rcView != null) {
             rcView.destroyPlayer();
         }
@@ -177,29 +178,77 @@ public class Radio extends Fragment {
         ctx=this.getContext();
         rq = new volleyRequestData(ctx);
         v=view;
+        this.pager=v.findViewById(R.id.pager_main);
+        this.player = new PlayerService(ctx, v.findViewById(R.id.player_view_m) , v.findViewById(R.id.title_main2));
 
-
-        this.mediaItm =new ArrayList<MediaItem>();
         this.progBar=v.findViewById(R.id.loadbar_radio);
 
-        rq.findCountryRadios(100,1,"India", (result) -> {
-            try {
-                Position = 0;
-                progBar.setProgress(0);
-                progBar.setVisibility(View.VISIBLE);
-                progBar.setMax(result.length());
+        recyclerView = v.findViewById(R.id.rcl_view);
+        recyclerView.setLayoutManager(new GridLayoutManager(ctx,2));
+        recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(ctx, DividerItemDecoration.HORIZONTAL));
+        setPager(50,50);
 
-                dataSet = new ArrayList<>();
+    }
 
-                for (int i = 0; i < result.length(); i++) {
-                        loopAndSaveChannels(result,i);
+    public void selectButton(View v){
+        ViewGroup parent = (ViewGroup) v.getParent();
+
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            if ((int)v.getTag()!=i){
+                parent.getChildAt(i).setScaleY(1);
+                parent.getChildAt(i).setScaleX(1);
+                parent.getChildAt(i).setElevation(0);
+                parent.getChildAt(i).setBackground(ContextCompat.getDrawable(ctx,R.drawable.button_draw));
+            }else{
+                parent.getChildAt((int)v.getTag()).setElevation(50);
+                parent.getChildAt((int)v.getTag()).setScaleY(1.2f);
+                parent.getChildAt((int)v.getTag()).setScaleX(1.2f);
+                parent.getChildAt((int)v.getTag()).setBackground(ContextCompat.getDrawable(ctx, R.drawable.button_select));
+            }}
+    }
+
+    public void setPager(int pages,int result_on){
+
+        for (int i = 0; i < pages; i++) {
+            Button bt = new Button(ctx);
+            bt.setText("P:"+(i+1));
+            bt.setTag(i);
+            bt.setBackground(ContextCompat.getDrawable(ctx,R.drawable.button_draw));
+            pager.addView(bt);
+
+            int finalI = i+1;
+            bt.setOnClickListener((v)->{
+                this.mediaItm =new ArrayList<MediaItem>();
+                selectButton(v);
+
+                rq.findCountryRadios(result_on, finalI,"India", (result) -> {
+                    try {
+                        Position = 0;
+                        progBar.setProgress(0);
+                        progBar.setVisibility(View.VISIBLE);
+                        progBar.setMax(result.length());
+
+                        dataSet = new ArrayList<>();
+
+                        for (int g = 0; g < result.length(); g++) {
+                            loopAndSaveChannels(result,g);
+                        }
+
+                    } catch (JSONException | IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            });
+
+            int finals = i;
+            this.player.getControllerFuture().addListener(() ->{
+                if (finals ==0) {
+                    bt.performClick();
                 }
+            }, MoreExecutors.directExecutor());
 
-            } catch (JSONException | IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
+        }
     }
 
     @Override

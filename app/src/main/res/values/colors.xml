@@ -5,4 +5,6 @@
     <color name="color_primary_light">#4FC3F7</color>
     <color name="color_primary_dark">#039BE5</color>
     <color name="color_fixed_white">#FFFFFF</color>
+    <color name="color_secondary">#B3E5FC</color>
+    <color name="color_secondary_dark">#81D4FA</color>
 </resources>

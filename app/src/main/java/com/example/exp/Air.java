@@ -231,6 +231,12 @@ public class Air extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
         try {
             this.closeAll();
         } catch (IOException e) {

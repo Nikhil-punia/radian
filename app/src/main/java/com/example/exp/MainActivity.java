@@ -14,6 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.Objects;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,19 +45,16 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabl = findViewById(R.id.tab_l);
 
         for (int tabs = 0; tabs < tabl.getTabCount(); tabs++) {
-
             TabLayout.Tab tabi = tabl.getTabAt(tabs);
-
             if (tabi != null) {
                 tabi.view.setTag(tabs);
                 tabi.view.setOnClickListener(v->{
                     clickedButton(v);
-
                 });
-
             }
-
         }
+
+        tabl.getTabAt(0).view.performClick();
 
     }
 
