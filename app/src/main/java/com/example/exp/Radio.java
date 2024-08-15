@@ -110,7 +110,7 @@ public class Radio extends Fragment {
 
     public void updateUi(ArrayList<PlayerContent> resp) throws JSONException, IOException {
 
-        this.player = new PlayerService(ctx, v.findViewById(R.id.player_view_m) , v.findViewById(R.id.main_sview));
+        this.player = new PlayerService(ctx, v.findViewById(R.id.player_view_m) , v.findViewById(R.id.title_main2));
 
         this.player.getControllerFuture().addListener(() ->{
             this.player.getPlayer().addMediaItems(mediaItm);
@@ -154,17 +154,16 @@ public class Radio extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStop() {
+        super.onStop();
         if (rcView != null) {
             rcView.destroyPlayer();
         }
-
-        rq.cancelAllRequest();
         player=null;
         playerg=null;
         dataSet=null;
         mediaItm=null;
+        rq.cancelAllRequest();
     }
 
     @Override
@@ -178,6 +177,7 @@ public class Radio extends Fragment {
         ctx=this.getContext();
         rq = new volleyRequestData(ctx);
         v=view;
+
 
         this.mediaItm =new ArrayList<MediaItem>();
         this.progBar=v.findViewById(R.id.loadbar_radio);

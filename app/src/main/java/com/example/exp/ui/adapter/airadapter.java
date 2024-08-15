@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.exp.PlayerService;
 import com.example.exp.R;
 import com.example.exp.volleyRequestData;
 
@@ -24,10 +25,12 @@ public class airadapter  extends RecyclerView.Adapter<airadapter.ViewHolder> {
     private static volleyRequestData rq = null;
     private final Context ctx;
     private int index = 0;
+    private PlayerService player;
 
-    public airadapter(Context context, JSONArray d){
+    public airadapter(Context context, JSONArray d,PlayerService player){
         data=d;
         this.ctx=context;
+        this.player = player;
         rq = new volleyRequestData(this.ctx);
     }
 
@@ -36,6 +39,7 @@ public class airadapter  extends RecyclerView.Adapter<airadapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.air, parent, false);
         try {
+            player.setParentToAll(parent);
             return new ViewHolder(rowItem);
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -44,11 +48,12 @@ public class airadapter  extends RecyclerView.Adapter<airadapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.itemView.setTag(position);
         try {
             holder.name.setText(data.getJSONObject(position).getString("name"));
             rq.getImage(data.getJSONObject(position).getString("image"),(res)->{
                 if (res != null) {
-                    holder.logo.setImageBitmap(Bitmap.createScaledBitmap(res,300,300,false));
+                    holder.logo.setImageBitmap(Bitmap.createScaledBitmap(res,400,400,false));
                     holder.logo.setVisibility(View.VISIBLE);
                 }else {
                     holder.logo.setImageResource(R.drawable.side_nav_bar);
@@ -72,8 +77,17 @@ public class airadapter  extends RecyclerView.Adapter<airadapter.ViewHolder> {
 
             view.setOnClickListener((v)->{
 
+                player.startPlay((int)v.getTag());
+
             });
         }
+    }
+
+    public void destroyPlayer(){
+        data=null;
+        rq.cancelAllRequest();
+        player.discardService();
+        this.player=null;
     }
 
     @Override

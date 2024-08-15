@@ -9,7 +9,7 @@
 
 
     <androidx.media3.ui.PlayerView
-        android:id="@+id/player_view_m"
+        android:id="@+id/player_view_air"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_weight="0.75"
@@ -22,7 +22,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:show_buffering="when_playing"
-        app:show_shuffle_button="true"></androidx.media3.ui.PlayerView>
+        app:show_shuffle_button="true" >
+
+    </androidx.media3.ui.PlayerView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_air_view"
@@ -33,16 +35,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pageio" />
 
+    <TextView
+        android:id="@+id/title_air"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/unknown_title"
+        app:layout_constraintBottom_toBottomOf="@+id/player_view_air"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/player_view_air"
+        app:layout_constraintVertical_bias="0.0" />
+
     <HorizontalScrollView
         android:id="@+id/pageio"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:background="?attr/colorPrimary"
         android:scrollbars="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/player_view_m"
+        app:layout_constraintTop_toBottomOf="@+id/player_view_air"
         app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout

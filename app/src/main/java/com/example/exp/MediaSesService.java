@@ -16,10 +16,7 @@ public class MediaSesService extends androidx.media3.session.MediaSessionService
         super.onCreate();
         ExoPlayer player = new ExoPlayer.Builder(this).build();
         mediaSession = new MediaSession.Builder(this, player).build();
-
-
-
-                }
+    }
 
     @Nullable
     @Override

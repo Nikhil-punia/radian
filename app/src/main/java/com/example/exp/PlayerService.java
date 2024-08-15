@@ -43,7 +43,7 @@ public class PlayerService {
     private MediaSession mds = null;
     private final PlayerView playUi;
     private final Context ctx;
-    private final View otherUi;
+    private final TextView otherUi;
     private final volleyRequestData rq;
     private ImageView artWork;
     private final int notificId =  (int)(Math.random()*1000);
@@ -62,10 +62,10 @@ public class PlayerService {
 
 
     @OptIn(markerClass = UnstableApi.class)
-    public  PlayerService(Context context, PlayerView ui, View otherUi){
+    public  PlayerService(Context context, PlayerView ui, TextView titleUi){
         this.playUi=ui;
         this.ctx=context;
-        this.otherUi = otherUi;
+        this.otherUi = titleUi;
         this.rq = new volleyRequestData(this.ctx);
         dataSet=null;
 
@@ -108,19 +108,23 @@ public class PlayerService {
                 new androidx.media3.common.Player.Listener() {
                     @SuppressLint("ResourceType")
 
+
                     @Override
                     public void onMediaMetadataChanged(MediaMetadata mediaMetadata) {
                         Player.Listener.super.onMediaMetadataChanged(mediaMetadata);
                         Object ty = mediaMetadata.title;
-                        if (ty != null) {
+
+                        if (ty != null && dataSet!=null ) {
                             if (dataSet.get(playerg.getCurrentMediaItemIndex()) != null) {
-                                setPlayingTitle(ty.toString());
                                 setArtWork(dataSet.get(playerg.getCurrentMediaItemIndex()).Background_Url);
                                 currIndex = playerg.getCurrentMediaItemIndex();
                                 currentItem = parentToAll.findViewById(currIndex+salt);
+                                setPlayingTitle(ty.toString());
                             }
                         }
+
                     }
+
 
                     @Override
                     public void onPlayerError(PlaybackException error) {
@@ -135,8 +139,11 @@ public class PlayerService {
                         }
                     }
 
+
                 }) ;
     }
+
+
 
     public void setParentToAll(ViewGroup parentToAll) {
         this.parentToAll = parentToAll;
@@ -174,8 +181,9 @@ public class PlayerService {
 
     public void initializeArtWork(){
         this.playUi.setArtworkDisplayMode(PlayerView.ARTWORK_DISPLAY_MODE_FILL);
-        this.artWork = playUi.findViewById(androidx.media3.ui.R.id.exo_artwork);
-        artWork.setVisibility(View.VISIBLE);
+        ImageView g = playUi.findViewById(androidx.media3.ui.R.id.exo_artwork);
+        this.artWork = new ImageView(ctx);
+        playUi.addView(artWork,1);
     }
 
     public void initializeMediaNotification(){
@@ -193,18 +201,21 @@ public class PlayerService {
     }
 
     public void setPlayingTitle(String Title){
+            otherUi.setVisibility(View.VISIBLE);
             this.curTitle = Title;
-            TextView mt = otherUi.findViewById(R.id.title_main2);
-            mt.setText(Title);
+            otherUi.setText(Title);
+            if (Title==null){
+                otherUi.setVisibility(View.GONE);
+            }
     }
 
     public void setArtWork(String url){
-        rq.getImage(url,(resp)->{
-            if (resp!= null) {
-                artWork.setImageBitmap(resp);
-                artWork.setVisibility(View.VISIBLE);
-            }
-        });
+            rq.getImage(url, (resp) -> {
+                if (resp != null) {
+                    artWork.setImageBitmap(resp);
+                    artWork.setVisibility(View.VISIBLE);
+                }
+            });
     }
 
     @OptIn(markerClass = UnstableApi.class)
