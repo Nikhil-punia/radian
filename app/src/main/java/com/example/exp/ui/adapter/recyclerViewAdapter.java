@@ -102,7 +102,7 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
                         if (data.get(position)!=null) {
                             holder.itemView.setTag(data.get(position));
                             player.startPlay(position);
-                        }
+                         }
         }
     }
 
