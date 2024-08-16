@@ -220,6 +220,7 @@ public class Radio extends Fragment {
             int finalI = i+1;
             bt.setOnClickListener((v)->{
                 this.mediaItm =new ArrayList<MediaItem>();
+                this.rq.cancelAllRequest();
                 selectButton(v);
 
                 rq.findCountryRadios(result_on, finalI,"India", (result) -> {

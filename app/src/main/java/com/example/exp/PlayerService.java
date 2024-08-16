@@ -207,7 +207,7 @@ public class PlayerService {
             this.curTitle = Title;
             otherUi.setText(Title);
             if (Title==null){
-                otherUi.setVisibility(View.GONE);
+                otherUi.setText("Unknown Title");
             }
     }
 
