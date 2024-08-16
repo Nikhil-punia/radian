@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/playerSpace"
         android:layout_width="0dp"
-        android:layout_height="250dp"
+        android:layout_height="275dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,21 +21,27 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.75">
+            android:layout_weight="0.85">
 
             <androidx.media3.ui.PlayerView
                 android:id="@+id/player_view_m"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:hapticFeedbackEnabled="true"
                 android:visibility="visible"
                 app:animation_enabled="true"
                 app:auto_show="true"
+                app:buffered_color="?attr/colorPrimary"
+                app:image_display_mode="fill"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-                app:show_buffering="when_playing"
-                app:show_shuffle_button="true"></androidx.media3.ui.PlayerView>
+                app:show_buffering="always"
+                app:show_shuffle_button="false"
+                app:surface_type="surface_view"
+                app:use_artwork="true"
+                app:use_controller="true"></androidx.media3.ui.PlayerView>
 
             <LinearLayout
                 android:id="@+id/linearLayout"

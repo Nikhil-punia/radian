@@ -13,6 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.OptIn;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.app.NotificationCompat;
 import androidx.media3.common.DeviceInfo;
 import androidx.media3.common.MediaItem;
@@ -29,6 +31,8 @@ import androidx.media3.session.MediaController;
 import androidx.media3.session.MediaSession;
 import androidx.media3.session.MediaStyleNotificationHelper;
 import androidx.media3.session.SessionToken;
+import androidx.media3.ui.AspectRatioFrameLayout;
+import androidx.media3.ui.PlayerControlView;
 import androidx.media3.ui.PlayerView;
 
 import com.example.exp.ui.adapter.recyclerViewAdapter;
@@ -176,14 +180,12 @@ public class PlayerService {
         return mdt.build();
     }
 
-
     @OptIn(markerClass = UnstableApi.class)
-
     public void initializeArtWork(){
-        this.playUi.setArtworkDisplayMode(PlayerView.ARTWORK_DISPLAY_MODE_FILL);
-        ImageView g = playUi.findViewById(androidx.media3.ui.R.id.exo_artwork);
+        ViewGroup prt = ((ViewGroup)(((ViewGroup)playUi).getChildAt(0)));
+        View g = playUi.findViewById(androidx.media3.ui.R.id.exo_artwork);
         this.artWork = new ImageView(ctx);
-        playUi.addView(artWork,1);
+        prt.addView(artWork,3);
     }
 
     public void initializeMediaNotification(){
