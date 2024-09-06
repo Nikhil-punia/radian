@@ -1,32 +1,57 @@
 package com.example.exp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.media3.common.util.UnstableApi;
 
+import com.example.exp.logic.download_manager.DownloadManagerUtil;
+import com.example.exp.ui.fragment.Air_window;
+import com.example.exp.ui.fragment.Download_window;
+import com.example.exp.ui.fragment.Menu_window;
+import com.example.exp.ui.fragment.Radio_window;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.Objects;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
+@UnstableApi
 public class MainActivity extends AppCompatActivity {
 
 
+    public String apiID = null;
+    public DownloadManagerUtil dms;
+    private FloatingActionButton menuBtn;
+    private FrameLayout menuFrame;
+    private ConstraintLayout mainParent;
+    private FrameLayout fragmentHolder;
+
+
+    @OptIn(markerClass = UnstableApi.class)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
-
         setContentView(R.layout.activity_main);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_sview), (v, insets) -> {
@@ -38,18 +63,34 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        mainParent=findViewById(R.id.main_sview);
+        menuBtn=findViewById(R.id.menubase_btn);
+        menuFrame=findViewById(R.id.menubase_util);
+        fragmentHolder = findViewById(R.id.dview);
+
+        dms = DownloadManagerUtil.getInstance();
+        dms.setCtx(getApplicationContext());
+        dms.setParentActivity(this);
+        dms.initialize();
+
+
         TypedValue typedValue = new TypedValue();
         this.getTheme().resolveAttribute(com.google.android.material.R.attr.colorPrimary,typedValue,true);
         getWindow().setStatusBarColor(getResources().getColor(typedValue.resourceId, this.getTheme()));
 
-        TabLayout tabl = findViewById(R.id.tab_l);
+        setupMenu();
 
+        TabLayout tabl = findViewById(R.id.tab_l);
         for (int tabs = 0; tabs < tabl.getTabCount(); tabs++) {
             TabLayout.Tab tabi = tabl.getTabAt(tabs);
             if (tabi != null) {
                 tabi.view.setTag(tabs);
                 tabi.view.setOnClickListener(v->{
-                    clickedButton(v);
+                    try {
+                        clickedButton(v);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
             }
         }
@@ -58,53 +99,91 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void clickedButton(View view){
+
+
+    @OptIn(markerClass = UnstableApi.class)
+    public void clickedButton(View view) throws IOException {
 
         if (view.getTag()!=null) {
 
             findViewById(R.id.sbar).setVisibility(View.GONE);
 
-//            Intent inttenta = new Intent(this, first.class);
-
             if (Integer.parseInt(view.getTag().toString())==0) {
 //
-                if (getSupportFragmentManager().findFragmentByTag("radioz") == null) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.dview, Radio.getInstance(),"radioz")
-                            .commit();
+                if (getSupportFragmentManager().findFragmentByTag("radioZen") == null) {
+                    getApiIdAndStartRadio();
                 }
 
 
             } else if (Integer.parseInt(view.getTag().toString())==1) {
-                if (getSupportFragmentManager().findFragmentByTag("radioa") == null) {
+                if (getSupportFragmentManager().findFragmentByTag("radioAir") == null) {
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .replace(R.id.dview, Air.getInstance(),"radioa")
+                            .replace(R.id.dview, Air_window.getInstance(),"radioAir")
                             .commit();
                 }
             } else if (Integer.parseInt(view.getTag().toString())==2) {
-//                inttenta = new Intent(this, third.class);
+
+                Download_window dwnFrag = Download_window.getInstance();
+                if (getSupportFragmentManager().findFragmentByTag("downloads") == null) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.dview, dwnFrag,"downloads")
+                            .commit();
+                }
             }
-
-
-
 
         }
 
-//        RecyclerView dynamic = findViewById(R.id.dview);
-
-
     }
 
-    public void startRadio(View v){
-        Intent inttenta = new Intent(this, radio.class);
-        Toast.makeText(MainActivity.this, "Started Radio Centre", Toast.LENGTH_SHORT).show();
+    public void getApiIdAndStartRadio() {
+        if (apiID==null){
 
-        TabLayout tabl = findViewById(R.id.tab_l);
-        tabl.selectTab(tabl.getTabAt(0));
+            new Thread(() -> {
+                OkHttpClient client = new OkHttpClient().newBuilder()
+                        .build();
 
-        startActivity(inttenta);
+                Request request = new Request.Builder()
+                        .addHeader("Accept","*/*")
+                        .url("https://zeno.fm/radio/hits-of-kishore-kumar/")
+                        .method("GET",null)
+                        .build();
+
+                try(Response resp = client.newCall(request).execute()){
+                    final Pattern pattern = Pattern.compile("_buildManifest.js\" defer=\"\"></script><script src=\"/_next/static/(.+?)/_ssgManifest.js\" defer=\"\"></script>", Pattern.DOTALL);
+                    final Matcher matcher = pattern.matcher(resp.body().string());
+                    matcher.find();
+                    apiID = matcher.group(0).split("/_next/static/")[1].split("/")[0];
+                    resp.body().close();
+                    startRadio();
+                }catch (IOException e){
+                    Toast.makeText(getApplicationContext(), "Can`t Connect To The Server! Try Later", Toast.LENGTH_SHORT).show();
+                    System.out.println(e);
+                }
+            }).start();
+    }else {
+            startRadio();
+        }
+    }
+
+    public void startRadio(){
+        Radio_window rad = Radio_window.getInstance();
+        rad.setApiId(apiID);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.dview, rad,"radioZen")
+                .commit();
+    }
+
+    public void setupMenu(){
+
+        menuBtn.setOnClickListener((view)->{
+            DialogFragment dialogFragment=Menu_window.getInstance(menuFrame.getWidth(),menuFrame.getHeight());
+            dialogFragment.setStyle(DialogFragment.STYLE_NO_FRAME, 0);
+            dialogFragment.show(getSupportFragmentManager(),"menuWindow");
+        });
+
     }
 
 }

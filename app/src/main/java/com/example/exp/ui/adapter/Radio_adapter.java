@@ -1,0 +1,244 @@
+package com.example.exp.ui.adapter;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.offline.Download;
+import androidx.media3.exoplayer.offline.DownloadManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.exp.R;
+import com.example.exp.logic.download_manager.DownloadManagerUtil;
+import com.example.exp.logic.player.PlayerContent;
+import com.example.exp.logic.player.PlayerService;
+import com.example.exp.logic.singleton.CacheSingleton;
+import com.example.exp.logic.volley.volleyRequestData;
+
+import org.json.JSONException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+
+public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder> {
+    private ArrayList<PlayerContent> data;
+    private final Context ctx;
+    private PlayerService player;
+    private final volleyRequestData rq ;
+    public static int saltid = 2752;
+    public static int saltIdDownBtn = 3752;
+    public ViewGroup parentToAll;
+    private final HashMap<String, Integer> channelBtnDrawable = new HashMap<>();
+    private final HashMap<String, Integer> channelPosition = new HashMap<>();
+
+    @OptIn(markerClass = UnstableApi.class)
+    public Radio_adapter(ArrayList<PlayerContent> data , Context context, PlayerService player) {
+        this.data = data;
+        this.ctx = context;
+
+        this.rq = new volleyRequestData(this.ctx);
+        this.player = player;
+        this.player.setSalt(saltid);
+
+        for (int i = 0; i < data.size(); i++) {
+            String id =(this.data.get(i).streamUrl.split("/")[3]);
+            if (DownloadManagerUtil.getRuntimeValues().get(id)==null) {
+                channelBtnDrawable.put((this.data.get(i).streamUrl.split("/")[3]), R.drawable.baseline_download_for_offline_24);
+            }else {
+                channelBtnDrawable.put((this.data.get(i).streamUrl.split("/")[3]), R.drawable.baseline_downloading_24);
+            }
+        }
+
+        for (int i = 0; i < data.size(); i++) {
+            channelPosition.put((this.data.get(i).streamUrl.split("/")[3]),i);
+        }
+
+        CacheSingleton.getInstance().getDownloadManager().addListener(new DownloadManager.Listener() {
+            @Override
+            public void onDownloadChanged(@NonNull DownloadManager downloadManager, @NonNull Download download, @Nullable Exception finalException) {
+                DownloadManager.Listener.super.onDownloadChanged(downloadManager, download, finalException);
+
+                if (download.state== Download.STATE_DOWNLOADING) {
+                    String id = download.request.uri.toString().split("/")[3];
+                    channelBtnDrawable.remove(id);
+                    channelBtnDrawable.put(id,R.drawable.baseline_downloading_24);
+                    if (channelPosition.get(id)!=null) {
+                        notifyItemChanged(channelPosition.get(id));
+                    }
+                }
+
+                if (download.state==Download.STATE_STOPPED){
+                    String id = download.request.uri.toString().split("/")[3];
+                    channelBtnDrawable.remove(id);
+                    channelBtnDrawable.put(id, R.drawable.baseline_download_for_offline_24);
+                    if (channelPosition.get(id)!=null) {
+                        notifyItemChanged(channelPosition.get(id));
+                    }
+                }
+
+            }
+
+        });
+    }
+
+
+    @NonNull
+    @Override
+    public Radio_adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.card, parent, false);
+        this.parentToAll = parent;
+        player.setParentToAll(parent);
+        return new ViewHolder(rowItem);
+    }
+
+    @OptIn(markerClass = UnstableApi.class)
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        holder.downloadBtn.setTag(this.data.get(position));
+        holder.downloadBtn.setId(saltIdDownBtn+position);
+        holder.favBtn.setTag(this.data.get(position));
+        holder.imgView.setVisibility(View.INVISIBLE);
+        holder.textView.setText(this.data.get(position).getChannel());
+        holder.itemView.setId(saltid+position);
+        holder.itemView.setTag(data.get(position));
+        setTheLogo(this.data.get(position).getLogo(),holder);
+
+        String id = this.data.get(position).getStreamUrl().split("/")[3];
+
+        if (channelBtnDrawable.get(id)!=null) {
+            holder.downloadBtn.setImageDrawable(AppCompatResources.getDrawable(ctx, channelBtnDrawable.get(id)));
+            }
+
+
+
+    }
+
+    @SuppressLint("ResourceType")
+    public void setTheLogo(String uri, ViewHolder holder){
+        rq.getImage(uri,(res)->{
+            if (res != null) {
+                holder.imgView.setImageBitmap(res);
+                holder.imgView.setVisibility(View.VISIBLE);
+            }else {
+                holder.imgView.setImageResource(R.drawable.side_nav_bar);
+            }
+        });
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return this.data.size();
+    }
+
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView textView;
+        private final ImageView imgView;
+        private final ImageButton downloadBtn ;
+        private final ImageButton favBtn;
+
+        @OptIn(markerClass = UnstableApi.class)
+        public ViewHolder(View view) {
+            super(view);
+
+
+//            String id = this.data.get(position).getStreamUrl().split("/")[3];
+
+            this.textView = view.findViewById(R.id.air_name);
+            this.imgView = view.findViewById(R.id.air_logo);
+            this.downloadBtn = view.findViewById(R.id.downloadaction);
+            this.favBtn = view.findViewById(R.id.favaction);
+
+            view.setOnClickListener((v)->{
+                try {
+                    setCards(v.getId()-saltid,this);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+
+            downloadBtn.setOnClickListener((v)->{
+                PlayerContent value = (PlayerContent) v.getTag();
+                String url = value.getStreamUrl();
+                String station = value.getTitle();
+
+                if (DownloadManagerUtil.runtimeValues.get(url.split("/")[3])==null) {
+                    if (DownloadManagerUtil.MAX_DOWNLOADS > CacheSingleton.getInstance().getCurrentDownloading()) {
+                        try {
+                            DownloadManagerUtil.getInstance().startDownload(url, station, v);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        Toast.makeText(ctx, "Max Download Limit Reached", Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    DownloadManagerUtil.getInstance().stopDownload(url.split("/")[3]);
+
+                }
+
+            });
+
+            favBtn.setOnClickListener((v)->{
+                PlayerContent value = (PlayerContent) v.getTag();
+                Toast.makeText(ctx, "Saved :"+value.getChannel(), Toast.LENGTH_SHORT).show();
+            });
+
+
+
+        }
+
+
+    public void setCards(int position,ViewHolder holder) throws JSONException {
+                        if (data.get(position)!=null) {
+                            player.startPlay(position);
+                         }
+        }
+    }
+
+
+
+    public void destroyPlayer(){
+        this.data=null;
+        player.discardService();
+        this.player=null;
+    }
+
+
+}
+
+//CacheSingleton.getInstance().getDownloadManager().addListener(new DownloadManager.Listener() {
+//    @Override
+//    public void onDownloadChanged(@NonNull DownloadManager downloadManager, @NonNull Download download, @Nullable Exception finalException) {
+//        DownloadManager.Listener.super.onDownloadChanged(downloadManager, download, finalException);
+//
+//        if (download.state== Download.STATE_DOWNLOADING) {
+//
+//            if (Objects.equals(((PlayerContent) downloadBtn.getTag()).streamUrl.split("/")[3], download.request.uri.toString().split("/")[3])) {
+//                downloadBtn.setImageDrawable(AppCompatResources.getDrawable(ctx, R.drawable.baseline_downloading_24));
+//            }
+//        }
+//        if (download.state==Download.STATE_STOPPED){
+//            if (Objects.equals(((PlayerContent) downloadBtn.getTag()).streamUrl.split("/")[3], download.request.uri.toString().split("/")[3])) {
+//                downloadBtn.setImageDrawable(AppCompatResources.getDrawable(ctx, R.drawable.baseline_download_for_offline_24));
+//            }
+//        }
+//
+//    }
+//
+//});

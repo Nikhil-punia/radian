@@ -5,7 +5,7 @@
     android:id="@+id/main_air"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Air">
+    tools:context=".ui.fragment.Air_window">
 
 
     <androidx.media3.ui.PlayerView
