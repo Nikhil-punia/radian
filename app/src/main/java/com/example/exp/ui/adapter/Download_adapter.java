@@ -2,6 +2,7 @@ package com.example.exp.ui.adapter;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +38,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Random;
 
 public class Download_adapter extends RecyclerView.Adapter<Download_adapter.ChannelDownloads> {
 
@@ -132,7 +134,16 @@ public class Download_adapter extends RecyclerView.Adapter<Download_adapter.Chan
         itemSize.setText(downloadSize);
         itemTime.setText(time);
 
+//        int c =getRandomColor(50);
+//     //   ((LinearLayout)(holder.channelName.getParent())).setBackgroundColor(c);
+//        ((LinearLayout)titleName.getParent()).setBackgroundColor(c);
+
         holder.channelItems.addView(item);
+    }
+
+    private int getRandomColor(int alpha){
+        Random r = new Random();
+        return Color.argb(alpha,r.nextInt(256),r.nextInt(256),r.nextInt(256));
     }
 
     private void setDownloadItemMargins(View v){

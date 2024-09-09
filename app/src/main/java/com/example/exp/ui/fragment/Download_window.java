@@ -11,7 +11,6 @@ import androidx.annotation.OptIn;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.ui.PlayerView;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -57,8 +56,6 @@ public class Download_window extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.downloadRecycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
-        recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.HORIZONTAL));
         recyclerView.setAdapter(new Download_adapter(getChannelData(),getContext(),pS));
     }
 

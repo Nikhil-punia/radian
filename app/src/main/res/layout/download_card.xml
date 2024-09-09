@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,6 +12,7 @@
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/downloadColorCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -22,8 +24,8 @@
                 <LinearLayout
                     android:id="@+id/linearLayout2"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:background="@drawable/download_channel_item_container_border"
+                    android:layout_height="50dp"
+                    android:background="@drawable/download_channel_item_container_border_stoked"
                     android:orientation="horizontal"
                     android:padding="10dp"
                     app:layout_constraintEnd_toEndOf="parent"

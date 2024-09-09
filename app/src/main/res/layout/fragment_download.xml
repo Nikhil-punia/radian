@@ -6,27 +6,9 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragment.Download_window" >
 
-    <androidx.media3.ui.PlayerView
-        android:id="@+id/player_view_download"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_weight="0.75"
-        android:visibility="visible"
-        app:animation_enabled="true"
-        app:auto_show="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:show_buffering="when_playing"
-        app:show_shuffle_button="true">
-
-    </androidx.media3.ui.PlayerView>
-
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="?android:attr/colorBackground"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -34,32 +16,73 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView3"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="?attr/colorSurfaceContainerLowest"
-            android:fontFamily="@font/averia_libre_light"
-            android:text="Downloads"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            app:autoSizeTextType="uniform" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@drawable/shadow"
-            android:elevation="1000dp"
-            app:layout_constraintBottom_toBottomOf="@+id/playerSpace"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/playerSpace" />
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8"
+                android:background="?attr/colorSurfaceContainerLowest"
+                android:fontFamily="@font/averia_libre_light"
+                android:gravity="center"
+                android:padding="1dp"
+                android:text="Downloads"
+                android:textAlignment="center"
+                android:textSize="24sp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/downloadRecycler"
+            <androidx.media3.ui.PlayerView
+                android:id="@+id/player_view_download"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_margin="2.5dp"
+                android:layout_weight="0.2"
+                android:visibility="visible"
+                app:animation_enabled="true"
+                app:auto_show="true"
+                app:resize_mode="fit"
+                app:show_buffering="when_playing"
+                app:show_shuffle_button="false"
+                app:use_artwork="true">
+
+            </androidx.media3.ui.PlayerView>
+
+        </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider6"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="1dp" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/downloadRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="10dp">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+                <View
+                    android:id="@+id/divider5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="75dp" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
     </LinearLayout>
 

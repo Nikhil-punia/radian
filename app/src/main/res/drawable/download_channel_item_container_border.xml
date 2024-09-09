@@ -3,12 +3,12 @@
     android:shape="rectangle" >
 
     <stroke
-        android:width="10dp"
-        android:color="?attr/colorOnSurfaceInverse" >
+        android:width="2.5dp"
+        android:color="@color/color_primary_light">
     </stroke>
 
     <corners
-        android:radius="1.5dp">
+        android:radius="0dp">
     </corners>
 
 </shape>
