@@ -2,6 +2,7 @@ package com.example.exp.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,7 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
     public ViewGroup parentToAll;
     private final HashMap<String, Integer> channelBtnDrawable = new HashMap<>();
     private final HashMap<String, Integer> channelPosition = new HashMap<>();
+    private final HashMap<String, Bitmap> channelBitmaps = new HashMap<>();
 
     @OptIn(markerClass = UnstableApi.class)
     public Radio_adapter(ArrayList<PlayerContent> data , Context context, PlayerService player) {
@@ -50,7 +52,6 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
 
         this.rq = new volleyRequestData(this.ctx);
         this.player = player;
-        this.player.setSalt(saltid);
 
         for (int i = 0; i < data.size(); i++) {
             String id =(this.data.get(i).streamUrl.split("/")[3]);
@@ -64,6 +65,8 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
         for (int i = 0; i < data.size(); i++) {
             channelPosition.put((this.data.get(i).streamUrl.split("/")[3]),i);
         }
+
+        setChannelBitmap();
 
         CacheSingleton.getInstance().getDownloadManager().addListener(new DownloadManager.Listener() {
             @Override
@@ -79,7 +82,7 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
                     }
                 }
 
-                if (download.state==Download.STATE_STOPPED){
+                if ((download.state==Download.STATE_STOPPED) || (download.state==Download.STATE_FAILED)){
                     String id = download.request.uri.toString().split("/")[3];
                     channelBtnDrawable.remove(id);
                     channelBtnDrawable.put(id, R.drawable.baseline_download_for_offline_24);
@@ -93,13 +96,25 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
         });
     }
 
+    private void setChannelBitmap() {
+        for (int i = 0; i < this.data.size(); i++) {
+            String url = this.data.get(i).Logo;
+            String id = this.data.get(i).streamUrl.split("/")[3];
+            if ((!url.isEmpty()) && (channelBitmaps.get(id)==null)){
+                rq.getImage(url, (resp) -> {
+                    channelBitmaps.put(id, resp);
+                });
+
+            }
+        }
+    }
+
 
     @NonNull
     @Override
     public Radio_adapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.card, parent, false);
+        View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.radio_card, parent, false);
         this.parentToAll = parent;
-        player.setParentToAll(parent);
         return new ViewHolder(rowItem);
     }
 
@@ -114,28 +129,29 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
         holder.textView.setText(this.data.get(position).getChannel());
         holder.itemView.setId(saltid+position);
         holder.itemView.setTag(data.get(position));
-        setTheLogo(this.data.get(position).getLogo(),holder);
-
         String id = this.data.get(position).getStreamUrl().split("/")[3];
+
+        setTheLogo(id,holder,position);
 
         if (channelBtnDrawable.get(id)!=null) {
             holder.downloadBtn.setImageDrawable(AppCompatResources.getDrawable(ctx, channelBtnDrawable.get(id)));
-            }
+        }
 
 
 
     }
 
     @SuppressLint("ResourceType")
-    public void setTheLogo(String uri, ViewHolder holder){
-        rq.getImage(uri,(res)->{
-            if (res != null) {
-                holder.imgView.setImageBitmap(res);
-                holder.imgView.setVisibility(View.VISIBLE);
-            }else {
-                holder.imgView.setImageResource(R.drawable.side_nav_bar);
-            }
-        });
+    public void setTheLogo(String id, ViewHolder holder,int position){
+        if (channelBitmaps.get(id)!=null){
+            holder.imgView.setImageBitmap(channelBitmaps.get(id));
+            holder.imgView.setVisibility(View.VISIBLE);
+        }else {
+            rq.getImage(data.get(position).Logo, (resp) -> {
+                channelBitmaps.put(id, resp);
+                notifyItemChanged(position);
+            });
+        }
     }
 
 
@@ -156,7 +172,7 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
             super(view);
 
 
-//            String id = this.data.get(position).getStreamUrl().split("/")[3];
+//           String id = this.data.get(position).getStreamUrl().split("/")[3];
 
             this.textView = view.findViewById(R.id.air_name);
             this.imgView = view.findViewById(R.id.air_logo);

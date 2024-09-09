@@ -91,14 +91,14 @@ public class Radio_window extends Fragment {
                         String uri_t = (b_j.getString("streamURL"));
 
                         PlayerContent plc = new PlayerContent(b_j.getString("streamName"),b_j.getString("name"), b_j.getString("logo"), b_j.getString("background"), b_o.getString("description"), b_j.getJSONArray("languages"), b_j.getString("genre"), stations.getJSONObject(index).getString("name"), uri_t, stations.getJSONObject(index).getString("url"));
-                        dataSet.add(plc);
                         addMediaItems(plc);
+                        dataSet.add(plc);
                     }
 
                     Position++;
                     progBar.setProgress(Position);
 
-                    if (Position == (stations.length() - 1)) {
+                    if (Position == stations.length()) {
                         progBar.setVisibility(View.GONE);
                         updateUi(dataSet);
                     }
@@ -109,9 +109,6 @@ public class Radio_window extends Fragment {
                     throw new RuntimeException(e);
                 }
             });
-
-
-
     }
 
     public void updateUi(ArrayList<PlayerContent> resp) throws JSONException, IOException {
@@ -136,7 +133,6 @@ public class Radio_window extends Fragment {
         MediaItem tef = mediaSource.getMediaItem().buildUpon().setMediaMetadata(setPlayerContents(data)).setMediaId(Integer.toString(dataSet.size()-1)).build();
         tef.buildUpon().setLiveConfiguration(new MediaItem.LiveConfiguration.Builder().setTargetOffsetMs(100).build()).build();
         mediaItm.add(tef);
-
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -210,7 +206,6 @@ public class Radio_window extends Fragment {
     }
 
     public void setPager(int pages,int result_on){
-
         for (int i = 0; i < pages; i++) {
             Button bt = new Button(ctx);
             bt.setText("P:"+(i+1));
@@ -220,7 +215,7 @@ public class Radio_window extends Fragment {
 
             int finalI = i+1;
             bt.setOnClickListener((v)->{
-                this.mediaItm =new ArrayList<MediaItem>();
+                this.mediaItm = new ArrayList<>();
                 this.rq.cancelAllRequest();
                 selectButton(v);
 

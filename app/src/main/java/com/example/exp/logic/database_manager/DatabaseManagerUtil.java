@@ -54,6 +54,11 @@ public class DatabaseManagerUtil {
         }
     }
 
+    public boolean checkTableEmpty(String id){
+        return DB.checkTableIsEmpty(id);
+    }
+
+
     public void updateDownloadingState(String state,String channelId,String rowId){
         ArrayList<ContentValues> v = getChannelDownloads(channelId);
         if (v!=null){
@@ -72,6 +77,10 @@ public class DatabaseManagerUtil {
     public void removeChannelDownloads(String channelId){
         String query = "Drop Table If Exists '"+channelId+"'";
         DB.exeQuery(query);
+    }
+
+    public ArrayList<String> getAllChannel(){
+        return DB.getAllTables();
     }
 
 }

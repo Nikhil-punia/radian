@@ -62,8 +62,6 @@ public class Player extends Service {
             this.otherUi = otherUi;
             this.rq = new volleyRequestData(this.ctx);
 
-
-
             ExoPlayer player = new ExoPlayer.Builder(ctx).build();
             MediaSession mediaSession = new MediaSession.Builder(context, player).setId(mdsId).build();
 
@@ -78,7 +76,6 @@ public class Player extends Service {
             } else {
                 builder = new NotificationCompat.Builder(this.ctx);
             }
-
 
             playUi.setArtworkDisplayMode(PlayerView.ARTWORK_DISPLAY_MODE_FILL);
             playUi.setPlayer(player);
@@ -129,13 +126,6 @@ public class Player extends Service {
                         artWork.setVisibility(View.VISIBLE);
 
                     }
-
-                    @Override
-                    public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
-
-                    }
-
-
 
                 }) ;
 

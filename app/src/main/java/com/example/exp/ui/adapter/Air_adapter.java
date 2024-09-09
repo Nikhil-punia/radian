@@ -23,7 +23,6 @@ public class Air_adapter extends RecyclerView.Adapter<Air_adapter.ViewHolder> {
     private static JSONArray data = null;
     private static volleyRequestData rq = null;
     private final Context ctx;
-    private final int index = 0;
     private PlayerService player;
 
     public Air_adapter(Context context, JSONArray d, PlayerService player){
@@ -36,9 +35,8 @@ public class Air_adapter extends RecyclerView.Adapter<Air_adapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.air, parent, false);
+        View rowItem = LayoutInflater.from(parent.getContext()).inflate(R.layout.air_card, parent, false);
         try {
-            player.setParentToAll(parent);
             return new ViewHolder(rowItem);
         } catch (JSONException e) {
             throw new RuntimeException(e);
@@ -80,6 +78,7 @@ public class Air_adapter extends RecyclerView.Adapter<Air_adapter.ViewHolder> {
 
             });
         }
+
     }
 
     public void destroyPlayer(){

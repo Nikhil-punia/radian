@@ -1,5 +1,6 @@
 package com.example.exp.ui.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -20,13 +21,16 @@ import com.example.exp.R;
 import com.example.exp.logic.download_manager.DownloadManagerUtil;
 import com.example.exp.logic.singleton.CacheSingleton;
 
-import java.text.DecimalFormat;
-
 public class Download_menu_window extends Fragment {
 
     private static Download_menu_window fragment;
+    private Context ctx;
 
     public Download_menu_window() {
+    }
+
+    public void setCtx(Context ctx) {
+        this.ctx = ctx;
     }
 
     public static Download_menu_window getInstance() {
@@ -73,13 +77,9 @@ public class Download_menu_window extends Fragment {
     @OptIn(markerClass = UnstableApi.class)
     private void setDownloadItems(View viewParent) {
         LinearLayout view = viewParent.findViewById(R.id.menuDownloadItemsParent);
-
         for (int i = 0; i < CacheSingleton.getInstance().getTotalDownloads(); i++) {
-
             if ((CacheSingleton.getInstance().getDownloadManager().getCurrentDownloads().get(i).state) == Download.STATE_DOWNLOADING) {
-
                 String id = CacheSingleton.getInstance().getDownloadManager().getCurrentDownloads().get(i).request.uri.toString().split("/")[3];
-
                 if (view.getChildCount() > 0) {
                     boolean isToUpdate = false;
                     for (int j = 0; j < view.getChildCount(); j++) {
@@ -111,13 +111,11 @@ public class Download_menu_window extends Fragment {
     private void addNewView(View view,String id,int i){
         if(getContext()!=null) {
             View v = LayoutInflater.from(getContext()).inflate(R.layout.download_menu_action_card, null);
-
             TextView title = v.findViewById(R.id.downloadMenuItemTitle);
             TextView size = v.findViewById(R.id.downloadMenuItemSize);
             ImageButton stopBtn = v.findViewById(R.id.dowloadMenuItemStop);
             v.setTag(id);
             stopBtn.setTag(id);
-
             title.setText(getTitle(id));
             size.setText(CacheSingleton.getInstance().getSizeofDownload(i));
 
@@ -130,35 +128,6 @@ public class Download_menu_window extends Fragment {
 
             ((LinearLayout) view.findViewById(R.id.menuDownloadItemsParent)).addView(v);
         }
-    }
-
-    @OptIn(markerClass = UnstableApi.class)
-    private void addNewView(View view,String id,Download download){
-        if(getContext()!=null) {
-            View v = LayoutInflater.from(getContext()).inflate(R.layout.download_menu_action_card, null);
-
-            TextView title = v.findViewById(R.id.downloadMenuItemTitle);
-            TextView size = v.findViewById(R.id.downloadMenuItemSize);
-            ImageButton stopBtn = v.findViewById(R.id.dowloadMenuItemStop);
-            v.setTag(id);
-            stopBtn.setTag(id);
-
-            title.setText(getTitle(id));
-            size.setText(convertSizeToMb(download.getBytesDownloaded()));
-
-            stopBtn.setOnClickListener((btn) -> {
-                if (btn.getTag() != null) {
-                    DownloadManagerUtil.getInstance().stopDownload(btn.getTag().toString());
-                    ((LinearLayout) view.findViewById(R.id.menuDownloadItemsParent)).removeView(v);
-                }
-            });
-
-            ((LinearLayout) view.findViewById(R.id.menuDownloadItemsParent)).addView(v);
-        }
-    }
-
-    public String convertSizeToMb(long size){
-        return new DecimalFormat("0.00").format(size / 1000000.00) + " Mb";
     }
 
     @OptIn(markerClass = UnstableApi.class)

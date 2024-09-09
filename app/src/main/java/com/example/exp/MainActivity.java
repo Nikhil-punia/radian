@@ -3,10 +3,12 @@ package com.example.exp;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -15,16 +17,22 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.offline.Download;
+import androidx.media3.exoplayer.offline.DownloadManager;
 
 import com.example.exp.logic.download_manager.DownloadManagerUtil;
+import com.example.exp.logic.download_manager.DownloadServices;
+import com.example.exp.logic.singleton.CacheSingleton;
 import com.example.exp.ui.fragment.Air_window;
 import com.example.exp.ui.fragment.Download_window;
 import com.example.exp.ui.fragment.Menu_window;
 import com.example.exp.ui.fragment.Radio_window;
+import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,8 +107,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     @OptIn(markerClass = UnstableApi.class)
     public void clickedButton(View view) throws IOException {
 
@@ -158,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                     resp.body().close();
                     startRadio();
                 }catch (IOException e){
-                    Toast.makeText(getApplicationContext(), "Can`t Connect To The Server! Try Later", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext(), "Can`t Connect To The Server! Try Later", Toast.LENGTH_SHORT).show();
                     System.out.println(e);
                 }
             }).start();
@@ -179,11 +185,34 @@ public class MainActivity extends AppCompatActivity {
     public void setupMenu(){
 
         menuBtn.setOnClickListener((view)->{
-            DialogFragment dialogFragment=Menu_window.getInstance(menuFrame.getWidth(),menuFrame.getHeight());
-            dialogFragment.setStyle(DialogFragment.STYLE_NO_FRAME, 0);
-            dialogFragment.show(getSupportFragmentManager(),"menuWindow");
+            Menu_window inst = Menu_window.getInstance(menuFrame.getWidth(), menuFrame.getHeight());
+            inst.setCtx(getApplicationContext());
+            inst.setStyle(DialogFragment.STYLE_NO_FRAME, 0);
+            inst.show(getSupportFragmentManager(),"menuWindow");
+        });
+
+        CacheSingleton.getInstance().getDownloadManager().addListener(new DownloadManager.Listener() {
+            @OptIn(markerClass = ExperimentalBadgeUtils.class)
+            @Override
+            public void onDownloadChanged(DownloadManager downloadManager, Download download, @Nullable Exception finalException) {
+                DownloadManager.Listener.super.onDownloadChanged(downloadManager, download, finalException);
+                if (download.state==Download.STATE_DOWNLOADING){
+                    Animation animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.floatingbtn);
+                    menuBtn.startAnimation(animation);
+                }
+            }
         });
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ArrayList<String> channels = DownloadManagerUtil.getInstance().getChannels();
+        for (int i = 0; i < channels.size(); i++) {
+            DownloadManagerUtil.getInstance().stopDownload(channels.get(i));
+        }
+
+        CacheSingleton.getInstance().destroySingleton();
+    }
 }

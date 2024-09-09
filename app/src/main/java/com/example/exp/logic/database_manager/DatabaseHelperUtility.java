@@ -24,6 +24,26 @@ public class DatabaseHelperUtility extends SQLiteOpenHelper {
         db.close();
     }
 
+    public ArrayList<String> getAllTables(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT name FROM sqlite_master WHERE type='table' AND name!='android_metadata' AND name!='sqlite_sequence' ";
+        Cursor c = db.rawQuery(query, null);
+        ArrayList<String> channels = new ArrayList<>();
+        if (c!= null) {
+            if (c.moveToFirst()) {
+                do {
+                    if (c.getColumnIndex("name")!=-1) {
+                        int index = c.getColumnIndex("name");
+                        channels.add(c.getString(index));
+                    }
+                } while (c.moveToNext());
+            }
+            c.close();
+        }
+        db.close();
+        return channels;
+    }
+
     public ArrayList<ContentValues> getQuery(String query){
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -98,6 +118,14 @@ public class DatabaseHelperUtility extends SQLiteOpenHelper {
         db.close();
     }
 
+    public boolean checkTableIsEmpty(String id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String count = "SELECT count(*) FROM '"+id+"'";
+        Cursor mcursor = db.rawQuery(count, null);
+        mcursor.moveToFirst();
+        int icount = mcursor.getInt(0);
+        return icount <= 0;
+    }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {

@@ -22,7 +22,7 @@ import java.util.concurrent.Executor;
 
 @UnstableApi
 public class CacheSingleton {
-    private static final CacheSingleton instance = new CacheSingleton();
+    private static CacheSingleton instance = new CacheSingleton();
     private DatabaseProvider databaseProvider;
     private Cache downloadCache;
     private DefaultHttpDataSource.Factory dataSourceFactory;
@@ -125,5 +125,9 @@ public class CacheSingleton {
 
     public Executor getDownloadExecutor() {
         return downloadExecutor;
+    }
+
+    public void destroySingleton(){
+        instance=null;
     }
 }

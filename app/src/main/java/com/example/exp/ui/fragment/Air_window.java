@@ -3,6 +3,10 @@ package com.example.exp.ui.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,14 +24,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-
+import com.example.exp.R;
 import com.example.exp.logic.player.PlayerContent;
 import com.example.exp.logic.player.PlayerService;
-import com.example.exp.R;
 import com.example.exp.ui.adapter.Air_adapter;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -55,8 +54,7 @@ public class Air_window extends Fragment {
     ArrayList<PlayerContent> plc;
 
     public static Air_window getInstance() {
-        Air_window fragment = new Air_window();
-        return fragment;
+        return new Air_window();
     }
 
     @Override

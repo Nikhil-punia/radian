@@ -1,12 +1,7 @@
 package com.example.exp.logic.download_manager;
 
-import static androidx.media3.common.util.Assertions.checkNotNull;
-
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,7 +17,6 @@ import androidx.media3.exoplayer.scheduler.Scheduler;
 
 import com.example.exp.R;
 import com.example.exp.logic.singleton.CacheSingleton;
-import com.example.exp.ui.fragment.Download_window;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -58,8 +52,8 @@ public class DownloadServices extends androidx.media3.exoplayer.offline.Download
     @NonNull
     @Override
     protected Notification getForegroundNotification(List<Download> downloads, int notMetRequirements) {
-            NotificationUtil.createNotificationChannel(CacheSingleton.getInstance().getCtx(), "channel_id", R.string.download_noti_name, R.string.download_noti_disc, NotificationUtil.IMPORTANCE_DEFAULT);
-            DownloadNotificationHelper downloadNotificationHelper = new DownloadNotificationHelper(CacheSingleton.getInstance().getCtx(), "channel_id");
+            NotificationUtil.createNotificationChannel(getApplicationContext(), "channel_id", R.string.download_noti_name, R.string.download_noti_disc, NotificationUtil.IMPORTANCE_DEFAULT);
+            DownloadNotificationHelper downloadNotificationHelper = new DownloadNotificationHelper(getApplicationContext(), "channel_id");
         int totalDownloading = 0;
         int totalCompleted = 0;
         long totalDownloadSize = 0;
@@ -96,25 +90,21 @@ public class DownloadServices extends androidx.media3.exoplayer.offline.Download
                 }
             }
 
-            if (Download_window.getInstance().dsA!=null) {
-                Download_window.getInstance().setStatusA(Download_window.getInstance().dsA);
-            }
-
             return nt;
     }
 
 
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >=Build.VERSION_CODES.O) {
-            CharSequence name = "Radio Downloads"; // User-visible name of the channel
-            String description = "What is downloading "; // Description of the channel
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("channel_id", name, importance);
-            channel.setDescription(description);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+//    private void createNotificationChannel() {
+//        if (Build.VERSION.SDK_INT >=Build.VERSION_CODES.O) {
+//            CharSequence name = "Radio is Downloads"; // User-visible name of the channel
+//            String description = "Please Wait "; // Description of the channel
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel("channel_id", name, importance);
+//            channel.setDescription(description);
+//
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
 
 }

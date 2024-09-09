@@ -97,7 +97,7 @@ public class CustomMetadataSse extends Service {
                 Objects.requireNonNull(DownloadManagerUtil.runtimeValues.get(id)).put("firstTime",false);
 
                 String station = Objects.requireNonNull(DownloadManagerUtil.runtimeValues.get(id)).getAsString("station");
-                String titlecheck = "Unknown Title : "+((long)(Math.random()*Math.pow(10,5)));
+                String titlecheck = "Unknown Title "+((long)(Math.random()*Math.pow(10,5)));
 
                 if (!title.isEmpty()) {
                     titlecheck = title;

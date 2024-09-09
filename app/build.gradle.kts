@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.com.chaquo.python.gradle.plugin)
     implementation(libs.okhttp.sse)
     implementation(libs.work.runtime)
+    implementation(libs.google.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

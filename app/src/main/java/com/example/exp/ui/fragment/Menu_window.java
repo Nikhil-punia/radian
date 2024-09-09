@@ -1,5 +1,6 @@
 package com.example.exp.ui.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,17 +20,26 @@ public class Menu_window extends DialogFragment {
 
     public static int w = 0;
     public static int h = 0;
+    public Context ctx ;
     private View parent ;
 
     public Menu_window() {
     }
 
 
-    public static Menu_window getInstance(int width,int height) {
+    public static Menu_window getInstance(int width, int height) {
         Menu_window fragment = new Menu_window();
         w=width;
         h=height;
         return fragment;
+    }
+
+    public void setCtx(Context ctx) {
+        this.ctx = ctx;
+    }
+
+    public Context getCtx() {
+        return ctx;
     }
 
     @Override
@@ -86,9 +96,11 @@ public class Menu_window extends DialogFragment {
 
     private void setTheDownloadMenuFragment() {
         if (getChildFragmentManager().findFragmentByTag("downloadMenuFragment")==null) {
+            Download_menu_window inst = Download_menu_window.getInstance();
+            inst.setCtx(ctx);
             getChildFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.menu_inside_frame, Download_menu_window.getInstance(), "downloadMenuFragment").commit();
+                    .replace(R.id.menu_inside_frame,inst , "downloadMenuFragment").commit();
         }
     }
 

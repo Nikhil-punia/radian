@@ -10,21 +10,19 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
 
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.offline.Download;
-import androidx.media3.exoplayer.offline.DownloadManager;
 import androidx.media3.exoplayer.offline.DownloadRequest;
 
-import com.example.exp.logic.database_manager.DatabaseManagerUtil;
 import com.example.exp.R;
+import com.example.exp.logic.database_manager.DatabaseManagerUtil;
 import com.example.exp.logic.singleton.CacheSingleton;
 import com.here.oksse.ServerSentEvent;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,9 +32,7 @@ import java.util.Objects;
 public class DownloadManagerUtil {
 
     private static Context ctx;
-    private static DownloadManager dM ;
     private static DatabaseManagerUtil DBM;
-    private CustomMetadataSse metaDataUtility;
     private static final String Download_State_Downloading = "d";
     private static final String Download_State_Completed= "c";
     private static final String Download_State_Stoped = "s";
@@ -87,7 +83,6 @@ public class DownloadManagerUtil {
     public void initialize(){
         CacheSingleton.getInstance().setCtx(ctx);
         CacheSingleton.getInstance().setCacheData();
-        dM = CacheSingleton.getInstance().getDownloadManager();
         DBM = new DatabaseManagerUtil(ctx);
     }
 
@@ -212,32 +207,6 @@ public class DownloadManagerUtil {
             Log.i(logTag,c.get(i).get(DatabaseManagerUtil.DownloadId_C_Name).toString());
             Log.i(logTag,c.get(i).get(DatabaseManagerUtil.DownloadState_C_Name).toString());
             Log.i(logTag,c.get(i).get(DatabaseManagerUtil.DownloadCondition_C_Name).toString());
-        }
-    }
-
-    private void updateUiToDownloading(String id) {
-        if (uiViews.get(id)!=null){
-            ImageButton downloadBtn = (ImageButton) uiViews.get(id);
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    assert downloadBtn != null;
-                    downloadBtn.setImageDrawable(AppCompatResources.getDrawable(parentActivity.getApplicationContext(), R.drawable.baseline_downloading_24));
-                }
-            });
-        }
-    }
-
-    private void updateUiToStop(String id) {
-        if (uiViews.get(id)!=null){
-            ImageButton downloadBtn = (ImageButton) uiViews.get(id);
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    assert downloadBtn != null;
-                    downloadBtn.setImageDrawable(AppCompatResources.getDrawable(parentActivity.getApplicationContext(), R.drawable.baseline_download_for_offline_24));
-                }
-            });
         }
     }
 
@@ -366,6 +335,32 @@ public class DownloadManagerUtil {
         if (runtimeValues.get(channelId)!=null){
             runtimeValues.remove(channelId);
         }
+    }
+
+    public ArrayList<String> getChannels(){
+
+        ArrayList<String> v = DBM.getAllChannel();
+        ArrayList<String> n = new ArrayList<>();
+
+        for (int i = 0; i < v.size(); i++) {
+            if (!DownloadManagerUtil.getInstance().checkTableEmpty(v.get(i))) {
+                n.add(v.get(i));
+            }
+        }
+
+        return n;
+    }
+
+    public ArrayList<ContentValues> getChannelDownloads(String id){
+        return DBM.getChannelDownloads(id);
+    }
+
+    public String convertSizeToMb(long size){
+        return new DecimalFormat("0.00").format(size / 1000000.00) + " Mb";
+    }
+
+    public boolean checkTableEmpty(String id){
+        return DBM.checkTableEmpty(id);
     }
 
 }
