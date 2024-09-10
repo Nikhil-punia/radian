@@ -5,13 +5,13 @@ plugins {
 
 
 android {
-    namespace = "com.example.exp"
+    namespace = "com.vdusar.radien"
     compileSdk = 34
 
 
 
     defaultConfig {
-        applicationId = "com.example.exp"
+        applicationId = "com.vdusar.radien"
         minSdk = 23
         targetSdk = 34
         versionCode = 1

@@ -20,6 +20,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "exp"
+rootProject.name = "radien"
 include(":app")
  
