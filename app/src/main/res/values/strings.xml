@@ -19,5 +19,5 @@
     <string name="unknown_title">Unknown Title</string>
     <string name="download_noti_name">Downloading Please Wait</string>
     <string name="download_noti_disc">Radio is Downloading The Media Items</string>
-    <string name="comming_soon_string">Comming Soon</string>
+    <string name="coming_soon_string">Coming Soon</string>
 </resources>

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/colorSurfaceBright"
     tools:context=".ui.fragment.Fav_menu_window">
 
     <!-- TODO: Update blank fragment layout -->
@@ -11,7 +12,7 @@
         android:layout_height="match_parent"
         android:autoText="true"
         android:gravity="center"
-        android:text="@string/comming_soon_string"
+        android:text="@string/coming_soon_string"
         android:textAlignment="gravity"
         android:textSize="20sp" />
 
