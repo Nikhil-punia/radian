@@ -9,6 +9,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Fav Frag" />
+        android:autoText="true"
+        android:gravity="center"
+        android:text="@string/comming_soon_string"
+        android:textAlignment="gravity"
+        android:textSize="20sp" />
 
 </FrameLayout>
