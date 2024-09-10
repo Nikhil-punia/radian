@@ -47,6 +47,7 @@ public class Download_adapter extends RecyclerView.Adapter<Download_adapter.Chan
     private final PlayerService pS;
     private final ArrayList<String> channelList;
     private  ViewGroup parentToALL = null;
+    private final String LOCAL_DOWNLOAD_FOLDER = Environment.DIRECTORY_MUSIC;
 
     @OptIn(markerClass = UnstableApi.class)
     public Download_adapter(HashMap<Integer, ArrayList<ContentValues>> d, Context context, PlayerService pl){
@@ -228,8 +229,8 @@ public class Download_adapter extends RecyclerView.Adapter<Download_adapter.Chan
                 String title = (String) tag.get("title");
 
                 try {
-                    FileOutputStream fos = new FileOutputStream(getAppPublicMusicStorageDir(chName, title + ".mp3"));
                     assert downloadId != null;
+                    FileOutputStream fos = new FileOutputStream(getAppPublicMusicStorageDir(chName, title+" "+downloadId.split("\\.")[1] + ".mp3"));
                     for (CacheSpan cacheSpan : CacheSingleton.getInstance().getDownloadCache().getCachedSpans(downloadId)) {
                         saveToLocalFolder(cacheSpan, fos);
                     }
@@ -256,10 +257,22 @@ public class Download_adapter extends RecyclerView.Adapter<Download_adapter.Chan
         fis.close();
     }
 
+    public boolean checkFileExists(String dirName,String fileName){
+        boolean checkFile = false;
+        File file = new File(Environment.getExternalStoragePublicDirectory(LOCAL_DOWNLOAD_FOLDER), dirName);
+        if (file.exists()) {
+            File destinationFile = new File(file,fileName);
+            if (destinationFile.exists()){
+                checkFile=true;
+            }
+        }
+        return checkFile;
+    }
+
 
     @Nullable
     File getAppPublicMusicStorageDir(String dirName,String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), dirName);
+        File file = new File(Environment.getExternalStoragePublicDirectory(LOCAL_DOWNLOAD_FOLDER), dirName);
 
         File destinationFile = new File(file,fileName);
 

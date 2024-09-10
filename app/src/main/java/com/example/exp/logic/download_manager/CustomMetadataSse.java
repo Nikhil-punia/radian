@@ -100,10 +100,11 @@ public class CustomMetadataSse extends Service {
                 String titlecheck = "Unknown Title "+((long)(Math.random()*Math.pow(10,5)));
 
                 if (!title.isEmpty()) {
-                    titlecheck = title;
+                    titlecheck = title.replaceAll("[^\\s.\\w-]","_");
                 }
 
                 Objects.requireNonNull(DownloadManagerUtil.runtimeValues.get(id)).put("title", titlecheck);
+
                 if (!firstTime) {
                     Timer t = new java.util.Timer();
                     String finalTitlecheck = titlecheck;

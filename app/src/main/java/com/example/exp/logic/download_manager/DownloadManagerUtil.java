@@ -195,6 +195,8 @@ public class DownloadManagerUtil {
 
     private void realDownload(String id, String station, String title, String condition){
         String randomId = id +"."+ (long) (Math.random()*Math.pow(10,10));
+        Objects.requireNonNull(runtimeValues.get(id)).put("dId",randomId);
+
         DBM.createChannelTable(id);
         DBM.appendValueInTable(id, station, title ,randomId, Download_State_Downloading,condition);
         startDs(randomId,id);
@@ -300,6 +302,9 @@ public class DownloadManagerUtil {
         if (c!=null) {
             for (int i = 0; i < c.size(); i++) {
                 if (c.get(i).get(DatabaseManagerUtil.DownloadId_C_Name).toString().equals(downloadId)) {
+                    if (c.get(i).get(DatabaseManagerUtil.DownloadState_C_Name).toString().equals(Download_State_Downloading)) {
+                        stopDownload(channelId);
+                    }
                     Log.i(logTag,"Removing : " + downloadId);
                     clearDs(c.get(i).get(DatabaseManagerUtil.DownloadId_C_Name).toString());
                     DBM.removeDownloadFromDatabase(channelId, c.get(i).get(DatabaseManagerUtil.Id_C_Name).toString());
