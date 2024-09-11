@@ -3,7 +3,10 @@ package com.vdusar.radien.ui.adapter;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,6 +131,7 @@ public class Download_adapter extends RecyclerView.Adapter<Download_adapter.Chan
         localDownload.setTag(localDownloadTagData);
 
         setLocalDownloadButton(localDownload);
+
         setDeleteButton(holder,deleteItem);
         setPlayer(i,position,d,item);
 
@@ -242,16 +247,22 @@ public class Download_adapter extends RecyclerView.Adapter<Download_adapter.Chan
                     assert downloadId != null;
                     String downloadTitle = title + " " + downloadId.split("\\.")[1] + ".mp3";
 
-                    if (!checkFileExists(chName,downloadTitle)) {
-                        FileOutputStream fos = new FileOutputStream(getAppPublicMusicStorageDir(chName, downloadTitle));
+
+                    if(!checkFileExist(chName,downloadTitle)) {
+
+                        File finalFile = getAppPublicMusicStorageDir(chName, downloadTitle);
+                        FileOutputStream fos = new FileOutputStream(finalFile);
                         for (CacheSpan cacheSpan : CacheSingleton.getInstance().getDownloadCache().getCachedSpans(downloadId)) {
                             saveToLocalFolder(cacheSpan, fos);
                         }
+                        Toast.makeText(ctx, "Downloaded Locally", Toast.LENGTH_SHORT).show();
                         fos.close();
+                        addMusicToMediaStore(ctx, finalFile, chName, chName, downloadTitle, chName);
+                        assert finalFile != null;
+                        finalFile.delete();
                     }else {
-                        Toast.makeText(ctx, "Not downloaded because it exists already", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ctx, "Downloaded Already Check Your Music Folder", Toast.LENGTH_SHORT).show();
                     }
-
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -275,28 +286,73 @@ public class Download_adapter extends RecyclerView.Adapter<Download_adapter.Chan
             fos.write(b,0,noOfBytesRead);
         }
         fis.close();
-        Toast.makeText(ctx, "Downloaded Locally", Toast.LENGTH_SHORT).show();
     }
 
-    public boolean checkFileExists(String dirName,String fileName){
-        boolean checkFile = false;
-        File file = new File(Environment.getExternalStoragePublicDirectory(LOCAL_DOWNLOAD_FOLDER), dirName);
-        if (file.exists()) {
-            File destinationFile = new File(file,fileName);
-            if (destinationFile.exists()){
-                checkFile=true;
+
+
+        public  void addMusicToMediaStore(Context context, File musicFile, String albumName, String artistName, String songTitle, String subdirectoryName){
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Audio.Media.TITLE, songTitle);
+            values.put(MediaStore.Audio.Media.ALBUM, albumName);
+            values.put(MediaStore.Audio.Media.DISPLAY_NAME, songTitle);
+            values.put(MediaStore.Audio.Media.MIME_TYPE, "audio/mpeg"); // Or the appropriate MIME type
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                values.put(MediaStore.Audio.Media.RELATIVE_PATH, LOCAL_DOWNLOAD_FOLDER + "/" + subdirectoryName);
+                values.put(MediaStore.Audio.Media.IS_PENDING, 1);
+            } else {
+                File subdirectory = new File(Environment.getExternalStoragePublicDirectory(LOCAL_DOWNLOAD_FOLDER), subdirectoryName);
+                if (!subdirectory.exists()) {
+                    subdirectory.mkdirs();
+                }
+                values.put(MediaStore.Audio.Media.DATA, new File(subdirectory, musicFile.getName()).getAbsolutePath());
             }
-        }
-        return checkFile;
-    }
 
+            Uri uri = context.getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
+
+
+                try (OutputStream outputStream = context.getContentResolver().openOutputStream(uri);
+                     FileInputStream fileInputStream = new FileInputStream(musicFile)) {
+                    if (outputStream != null) {
+                        byte[] buffer = new byte[1024];
+                        int length;
+                        while ((length = fileInputStream.read(buffer)) > 0) {
+                            outputStream.write(buffer, 0, length);
+                        }
+                    }
+
+                    values.clear();
+                    values.put(MediaStore.Audio.Media.IS_PENDING, 0);
+                    context.getContentResolver().update(uri, values, null, null);
+                } catch (Exception e) {
+                    // Handle exceptions
+                    e.printStackTrace();
+                }
+        }
+
+
+        public boolean checkFileExist(String dir,String file){
+            boolean check = false;
+            File dirt = new File(Environment.getExternalStoragePublicDirectory(LOCAL_DOWNLOAD_FOLDER),dir);
+            if (dirt.exists()){
+                File files = new File(dirt,file);
+                if (files.exists()) {
+                    check = true;
+                }
+            }
+            return check;
+        }
 
     @Nullable
-    File getAppPublicMusicStorageDir(String dirName,String fileName) {
-        File file = new File(Environment.getExternalStoragePublicDirectory(LOCAL_DOWNLOAD_FOLDER), dirName);
-
-        return new File(file,fileName);
+    File getAppPublicMusicStorageDir(String dirName,String fileName) throws IOException {
+        File file = new File(ctx.getApplicationContext().getExternalFilesDir(LOCAL_DOWNLOAD_FOLDER), dirName);
+        file.mkdir();
+        File f = new File(file,fileName);
+        f.createNewFile();
+        return f;
     }
+
+
 
 
     public class ChannelDownloads extends RecyclerView.ViewHolder{

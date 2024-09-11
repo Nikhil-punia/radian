@@ -1,5 +1,7 @@
 package com.vdusar.radien;
 
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
@@ -10,8 +12,11 @@ import android.widget.FrameLayout;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -20,15 +25,15 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.media3.exoplayer.offline.Download;
 import androidx.media3.exoplayer.offline.DownloadManager;
 
+import com.google.android.material.badge.ExperimentalBadgeUtils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 import com.vdusar.radien.logic.download_manager.DownloadManagerUtil;
 import com.vdusar.radien.logic.singleton.CacheSingleton;
 import com.vdusar.radien.ui.fragment.Air_window;
 import com.vdusar.radien.ui.fragment.Download_window;
 import com.vdusar.radien.ui.fragment.Menu_window;
 import com.vdusar.radien.ui.fragment.Radio_window;
-import com.google.android.material.badge.ExperimentalBadgeUtils;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,6 +113,10 @@ public class MainActivity extends AppCompatActivity {
 
     @OptIn(markerClass = UnstableApi.class)
     public void clickedButton(View view) throws IOException {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestNotificationPemission();
+        }
 
         if (view.getTag()!=null) {
 
@@ -202,6 +211,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public void requestNotificationPemission(){
+        int permissionState = ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS);
+        // If the permission is not granted, request it.
+        if (permissionState == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
+        }
     }
 
     @Override

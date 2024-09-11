@@ -56,28 +56,32 @@ public class CustomMetadataSse extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
-        Notification notification = notificationBuilder.setOngoing(true)
+        Notification notification = notificationBuilder
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setOngoing(true)
                 .setContentText("Please Wait Download Service Started")
                 .setContentTitle("Downloading Items")
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .build();
 
-
+        notification.flags = Notification.FLAG_ONGOING_EVENT;
         startForeground((int) (Math.random()*Math.pow(10,5)), notification);
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     @RequiresApi(Build.VERSION_CODES.O)
     private String createNotificationChannel(NotificationManager notificationManager){
-        String id = ((Math.random()*Math.pow(10,5))+1)+"";
         String Name = "Background Download Service";
 
-        NotificationChannel channel = new NotificationChannel(id, Name, NotificationManager.IMPORTANCE_HIGH);
+        NotificationChannel channel = new NotificationChannel(DownloadManagerUtil.NOTIFICATION_CHANNEL_NAME, Name, NotificationManager.IMPORTANCE_HIGH);
         notificationManager.createNotificationChannel(channel);
-        return id;
+        return DownloadManagerUtil.NOTIFICATION_CHANNEL_NAME;
     }
 
     @OptIn(markerClass = UnstableApi.class)
@@ -126,7 +130,7 @@ public class CustomMetadataSse extends Service {
             throw new RuntimeException(e);
         }
 
-        return Service.START_STICKY;
+        return Service.START_REDELIVER_INTENT;
     }
 
     public interface messageCallback{

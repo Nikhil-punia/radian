@@ -48,6 +48,7 @@ public class DownloadManagerUtil {
     private final List<AlertDialog> dialogList = new ArrayList<>();
     private final HashMap<String, Intent> serviceList =  new HashMap<>();
     public static int MAX_DOWNLOADS = 3;
+    public static String NOTIFICATION_CHANNEL_NAME = "Radio_channel_download";
 
 
     public static HashMap<String, ContentValues> getRuntimeValues() {

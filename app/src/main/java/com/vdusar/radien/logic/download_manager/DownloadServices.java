@@ -32,7 +32,7 @@ public class DownloadServices extends androidx.media3.exoplayer.offline.Download
     private Context ctx;
 
     public DownloadServices() {
-        super((int) (Math.random()*Math.pow(10,5)),1000,"channel_id", R.string.download_noti_name,R.string.download_noti_disc);
+        super((int) (Math.random()*Math.pow(10,5)),1000,DownloadManagerUtil.NOTIFICATION_CHANNEL_NAME, R.string.download_noti_name,R.string.download_noti_disc);
     }
 
 
@@ -52,11 +52,12 @@ public class DownloadServices extends androidx.media3.exoplayer.offline.Download
     @NonNull
     @Override
     protected Notification getForegroundNotification(List<Download> downloads, int notMetRequirements) {
-            NotificationUtil.createNotificationChannel(getApplicationContext(), "channel_id", R.string.download_noti_name, R.string.download_noti_disc, NotificationUtil.IMPORTANCE_DEFAULT);
-            DownloadNotificationHelper downloadNotificationHelper = new DownloadNotificationHelper(getApplicationContext(), "channel_id");
-        int totalDownloading = 0;
-        int totalCompleted = 0;
-        long totalDownloadSize = 0;
+            NotificationUtil.createNotificationChannel(getApplicationContext(), DownloadManagerUtil.NOTIFICATION_CHANNEL_NAME, R.string.download_noti_name, R.string.download_noti_disc, NotificationUtil.IMPORTANCE_HIGH);
+            DownloadNotificationHelper downloadNotificationHelper = new DownloadNotificationHelper(getApplicationContext(), DownloadManagerUtil.NOTIFICATION_CHANNEL_NAME);
+
+            int totalDownloading = 0;
+            int totalCompleted = 0;
+            long totalDownloadSize = 0;
 
         if (!downloads.isEmpty()) {
 
