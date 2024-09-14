@@ -140,6 +140,19 @@ public class DownloadManagerUtil {
 
     }
 
+    public void checkStopPrevious(String id,String title){
+        ArrayList<ContentValues> v = DBM.getChannelDownloads(id);
+        boolean[] condition = checkIsDownloadingAlready(id,title);
+
+        if (!condition[0]) {
+            if (!condition[1]) {
+                checkAndStopPreviousDownload(v, id);
+            }
+        }else {
+            checkAndStopPreviousDownload(v, id);
+        }
+    }
+
     public void internalDownload(String id,String title, String station,boolean firstDownload) {
 
         clearPreviousDialogs();
@@ -159,9 +172,6 @@ public class DownloadManagerUtil {
 
         if (!condition[0]) {
             if (!condition[1]) {
-
-                // todo : this method check and complete the previous download
-                checkAndStopPreviousDownload(v, id);
 
                 // todo : method for initiation of a new download
                 realDownload(id,station,title,con);

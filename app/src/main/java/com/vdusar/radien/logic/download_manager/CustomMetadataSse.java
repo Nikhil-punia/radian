@@ -110,6 +110,9 @@ public class CustomMetadataSse extends Service {
                 Objects.requireNonNull(DownloadManagerUtil.runtimeValues.get(id)).put("title", titlecheck);
 
                 if (!firstTime) {
+
+                    util.checkStopPrevious(id,titlecheck);
+
                     Timer t = new java.util.Timer();
                     String finalTitlecheck = titlecheck;
                     t.schedule(
@@ -122,6 +125,7 @@ public class CustomMetadataSse extends Service {
                             },
                             5000
                     );
+
                 }else {
                     util.internalDownload(id, titlecheck, station, true);
                 }
