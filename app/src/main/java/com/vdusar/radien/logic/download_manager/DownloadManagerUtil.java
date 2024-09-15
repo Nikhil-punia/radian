@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,9 +47,10 @@ public class DownloadManagerUtil {
     private static final String logTag = "DownloadManagerUtil";
     public static HashMap<String, ContentValues> runtimeValues = new HashMap<>();
     private final List<AlertDialog> dialogList = new ArrayList<>();
-    private final HashMap<String, Intent> serviceList =  new HashMap<>();
+    public final HashMap<String, Intent> serviceList =  new HashMap<>();
     public static int MAX_DOWNLOADS = 3;
     public static String NOTIFICATION_CHANNEL_NAME = "Radio_channel_download";
+    public static int MAX_RETRY_ON_COMPLETE = 3;
 
 
     public static HashMap<String, ContentValues> getRuntimeValues() {
@@ -97,6 +99,7 @@ public class DownloadManagerUtil {
         v.put("id",id);
         v.put("station",station);
         v.put("firstTime",true);
+        v.put("maxRetryOnComplete",0);
 
         runtimeValues.put(id,v);
 
@@ -140,17 +143,9 @@ public class DownloadManagerUtil {
 
     }
 
-    public void checkStopPrevious(String id,String title){
+    public void checkStopPrevious(String id){
         ArrayList<ContentValues> v = DBM.getChannelDownloads(id);
-        boolean[] condition = checkIsDownloadingAlready(id,title);
-
-        if (!condition[0]) {
-            if (!condition[1]) {
-                checkAndStopPreviousDownload(v, id);
-            }
-        }else {
-            checkAndStopPreviousDownload(v, id);
-        }
+        checkAndStopPreviousDownload(v, id);
     }
 
     public void internalDownload(String id,String title, String station,boolean firstDownload) {
@@ -167,17 +162,32 @@ public class DownloadManagerUtil {
             con = Download_Condition_Complete;
         }
 
-        // todo : condition 0 is to check the download is present but stopped
-        // todo : condition 1 is to check the download is present and downloading
+        // note : condition 0 is to check the download is present but stopped
+        // note : condition 1 is to check the download is present and downloading
+        // note : condition 2 is to check the download is present and completed
+
+
 
         if (!condition[0]) {
+            if (!condition[2]) {
             if (!condition[1]) {
-
-                // todo : method for initiation of a new download
-                realDownload(id,station,title,con);
-
-            }else {
+                    // note : method for initiation of a new download
+                    realDownload(id, station, title, con);
+                }
+            else {
                 Log.i(logTag,"Downloading Already");
+            }
+            }
+            else {
+                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(parentActivity.getApplicationContext(), "Downloaded already, please delete the current title for downloading it again", Toast.LENGTH_SHORT).show());
+
+                int retryTime = ((int) Objects.requireNonNull(runtimeValues.get(id)).get("maxRetryOnComplete"))+1;
+                Objects.requireNonNull(runtimeValues.get(id)).put("maxRetryOnComplete",retryTime);
+
+                if (retryTime>MAX_RETRY_ON_COMPLETE){
+                    stopDownload(id);
+                }
+
             }
         }else {
             askDownloadAgain(title, new downloadDialog() {
@@ -257,12 +267,15 @@ public class DownloadManagerUtil {
 
     private boolean[] checkIsDownloadingAlready(String id,String title){
         ArrayList<ContentValues> v = DBM.getChannelDownloads(id);
-        boolean[] isDownloading = {false,false};
+        boolean[] isDownloading = {false,false,false};
         if (v!=null) {
             for (int i = 0; i < v.size(); i++) {
                 if (v.get(i).get(DatabaseManagerUtil.N_C_Title).toString().equals(title)) {
                     if (v.get(i).get(DatabaseManagerUtil.DownloadState_C_Name).toString().equals(Download_State_Stoped)) {
                         isDownloading[0] = true;
+                    }
+                    if (v.get(i).get(DatabaseManagerUtil.DownloadState_C_Name).toString().equals(Download_State_Completed)) {
+                        isDownloading[2] = true;
                     }
                     isDownloading[1] = true;
                 }

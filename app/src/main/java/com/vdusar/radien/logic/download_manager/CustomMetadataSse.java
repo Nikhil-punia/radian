@@ -111,7 +111,7 @@ public class CustomMetadataSse extends Service {
 
                 if (!firstTime) {
 
-                    util.checkStopPrevious(id,titlecheck);
+                    util.checkStopPrevious(id);
 
                     Timer t = new java.util.Timer();
                     String finalTitlecheck = titlecheck;

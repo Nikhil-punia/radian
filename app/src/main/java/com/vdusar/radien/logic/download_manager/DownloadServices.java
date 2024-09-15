@@ -2,6 +2,7 @@ package com.vdusar.radien.logic.download_manager;
 
 import android.app.Notification;
 import android.content.Context;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,7 +53,7 @@ public class DownloadServices extends androidx.media3.exoplayer.offline.Download
     @NonNull
     @Override
     protected Notification getForegroundNotification(List<Download> downloads, int notMetRequirements) {
-            NotificationUtil.createNotificationChannel(getApplicationContext(), DownloadManagerUtil.NOTIFICATION_CHANNEL_NAME, R.string.download_noti_name, R.string.download_noti_disc, NotificationUtil.IMPORTANCE_HIGH);
+            NotificationUtil.createNotificationChannel(getApplicationContext(), DownloadManagerUtil.NOTIFICATION_CHANNEL_NAME, R.string.download_noti_name, R.string.download_noti_disc, NotificationUtil.IMPORTANCE_LOW);
             DownloadNotificationHelper downloadNotificationHelper = new DownloadNotificationHelper(getApplicationContext(), DownloadManagerUtil.NOTIFICATION_CHANNEL_NAME);
 
             int totalDownloading = 0;
@@ -66,6 +67,7 @@ public class DownloadServices extends androidx.media3.exoplayer.offline.Download
                 if(downloads.get(i).state == Download.STATE_DOWNLOADING){
                     totalDownloading++;
                 }
+
 
                 System.out.println(downloads.get(i).state);
 
@@ -85,7 +87,12 @@ public class DownloadServices extends androidx.media3.exoplayer.offline.Download
                         downloads,
                         notMetRequirements);
 
-            if (!downloads.isEmpty()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Notification.Builder.recoverBuilder(this,nt).setOnlyAlertOnce(true).setOngoing(true).build();
+            }
+
+
+        if (!downloads.isEmpty()) {
                 for (int i = 0; i <downloads.size(); i++) {
                     System.out.println("Download no : "+i+" " + new DecimalFormat("0.00").format(downloads.get(i).getBytesDownloaded() / 1000000.00) + " Mb");
                 }
@@ -97,7 +104,7 @@ public class DownloadServices extends androidx.media3.exoplayer.offline.Download
 
 //    private void createNotificationChannel() {
 //        if (Build.VERSION.SDK_INT >=Build.VERSION_CODES.O) {
-//            CharSequence name = "Radio is Downloads"; // User-visible name of the channel
+//            CharSequence name = "Radio is Downloading"; // User-visible name of the channel
 //            String description = "Please Wait "; // Description of the channel
 //            int importance = NotificationManager.IMPORTANCE_DEFAULT;
 //            NotificationChannel channel = new NotificationChannel("channel_id", name, importance);

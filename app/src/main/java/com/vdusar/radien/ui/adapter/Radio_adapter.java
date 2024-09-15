@@ -73,8 +73,10 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
             public void onDownloadChanged(@NonNull DownloadManager downloadManager, @NonNull Download download, @Nullable Exception finalException) {
                 DownloadManager.Listener.super.onDownloadChanged(downloadManager, download, finalException);
 
+                String[] splitId = download.request.uri.toString().split("/");
+
                 if (download.state== Download.STATE_DOWNLOADING) {
-                    String id = download.request.uri.toString().split("/")[3];
+                    String id = splitId[3];
                     channelBtnDrawable.remove(id);
                     channelBtnDrawable.put(id,R.drawable.baseline_downloading_24);
                     if (channelPosition.get(id)!=null) {
@@ -83,12 +85,12 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
                 }
 
                 if ((download.state==Download.STATE_STOPPED) || (download.state==Download.STATE_FAILED)){
-                    String id = download.request.uri.toString().split("/")[3];
-                    channelBtnDrawable.remove(id);
-                    channelBtnDrawable.put(id, R.drawable.baseline_download_for_offline_24);
-                    if (channelPosition.get(id)!=null) {
-                        notifyItemChanged(channelPosition.get(id));
-                    }
+                    String id = splitId[3];
+                        channelBtnDrawable.remove(id);
+                        channelBtnDrawable.put(id, R.drawable.baseline_download_for_offline_24);
+                        if (channelPosition.get(id) != null) {
+                            notifyItemChanged(channelPosition.get(id));
+                        }
                 }
 
             }
@@ -205,7 +207,6 @@ public class Radio_adapter extends RecyclerView.Adapter<Radio_adapter.ViewHolder
                     }
                 }else {
                     DownloadManagerUtil.getInstance().stopDownload(url.split("/")[3]);
-
                 }
 
             });

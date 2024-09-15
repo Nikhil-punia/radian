@@ -1,5 +1,6 @@
 package com.vdusar.radien;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
@@ -37,6 +39,7 @@ import com.vdusar.radien.ui.fragment.Radio_window;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -107,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        tabl.getTabAt(0).view.performClick();
+        Objects.requireNonNull(tabl.getTabAt(0)).view.performClick();
 
     }
 
@@ -115,8 +118,10 @@ public class MainActivity extends AppCompatActivity {
     public void clickedButton(View view) throws IOException {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestNotificationPemission();
+            requestNotificationPermission();
         }
+
+        requestStoragePermission();
 
         if (view.getTag()!=null) {
 
@@ -168,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                     final Pattern pattern = Pattern.compile("_buildManifest.js\" defer=\"\"></script><script src=\"/_next/static/(.+?)/_ssgManifest.js\" defer=\"\"></script>", Pattern.DOTALL);
                     final Matcher matcher = pattern.matcher(resp.body().string());
                     matcher.find();
-                    apiID = matcher.group(0).split("/_next/static/")[1].split("/")[0];
+                    apiID = Objects.requireNonNull(matcher.group(0)).split("/_next/static/")[1].split("/")[0];
                     resp.body().close();
                     startRadio();
                 }catch (IOException e){
@@ -202,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         CacheSingleton.getInstance().getDownloadManager().addListener(new DownloadManager.Listener() {
             @OptIn(markerClass = ExperimentalBadgeUtils.class)
             @Override
-            public void onDownloadChanged(DownloadManager downloadManager, Download download, @Nullable Exception finalException) {
+            public void onDownloadChanged(@NonNull DownloadManager downloadManager, @NonNull Download download, @Nullable Exception finalException) {
                 DownloadManager.Listener.super.onDownloadChanged(downloadManager, download, finalException);
                 if (download.state==Download.STATE_DOWNLOADING){
                     Animation animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.floatingbtn);
@@ -214,12 +219,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    public void requestNotificationPemission(){
+    public void requestNotificationPermission(){
         int permissionState = ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS);
         // If the permission is not granted, request it.
         if (permissionState == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
         }
+
+
+    }
+
+    public void requestStoragePermission(){
+        int permissionState1 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int permissionState2 = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+
+        // If the permission is not granted, request it.
+        if (permissionState1 == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+        }
+
+        if (permissionState2 == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            int permissionState3 = ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+            if (permissionState3 == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.MANAGE_EXTERNAL_STORAGE}, 4);
+            }
+        }
+
     }
 
     @Override
