@@ -129,5 +129,7 @@ public class CacheSingleton {
 
     public void destroySingleton(){
         instance=null;
+        downloadCache.release();
+        dM.release();
     }
 }

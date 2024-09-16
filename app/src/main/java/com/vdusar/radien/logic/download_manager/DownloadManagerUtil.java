@@ -84,9 +84,11 @@ public class DownloadManagerUtil {
 
 
     public void initialize(){
-        CacheSingleton.getInstance().setCtx(ctx);
-        CacheSingleton.getInstance().setCacheData();
-        DBM = new DatabaseManagerUtil(ctx);
+        if(CacheSingleton.getInstance()!=null) {
+            CacheSingleton.getInstance().setCtx(ctx);
+            CacheSingleton.getInstance().setCacheData();
+            DBM = new DatabaseManagerUtil(ctx);
+        }
     }
 
     public void startDownload(String url, String station, View ui) throws InterruptedException {

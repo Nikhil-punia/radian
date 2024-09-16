@@ -204,17 +204,20 @@ public class MainActivity extends AppCompatActivity {
             inst.show(getSupportFragmentManager(),"menuWindow");
         });
 
-        CacheSingleton.getInstance().getDownloadManager().addListener(new DownloadManager.Listener() {
-            @OptIn(markerClass = ExperimentalBadgeUtils.class)
-            @Override
-            public void onDownloadChanged(@NonNull DownloadManager downloadManager, @NonNull Download download, @Nullable Exception finalException) {
-                DownloadManager.Listener.super.onDownloadChanged(downloadManager, download, finalException);
-                if (download.state==Download.STATE_DOWNLOADING){
-                    Animation animation = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.floatingbtn);
-                    menuBtn.startAnimation(animation);
+
+        if (CacheSingleton.getInstance()!=null) {
+            CacheSingleton.getInstance().getDownloadManager().addListener(new DownloadManager.Listener() {
+                @OptIn(markerClass = ExperimentalBadgeUtils.class)
+                @Override
+                public void onDownloadChanged(@NonNull DownloadManager downloadManager, @NonNull Download download, @Nullable Exception finalException) {
+                    DownloadManager.Listener.super.onDownloadChanged(downloadManager, download, finalException);
+                    if (download.state == Download.STATE_DOWNLOADING) {
+                        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.floatingbtn);
+                        menuBtn.startAnimation(animation);
+                    }
                 }
-            }
-        });
+            });
+        }
 
     }
 
@@ -260,6 +263,10 @@ public class MainActivity extends AppCompatActivity {
             DownloadManagerUtil.getInstance().stopDownload(channels.get(i));
         }
 
-        CacheSingleton.getInstance().destroySingleton();
+        if (CacheSingleton.getInstance()!=null){
+            CacheSingleton.getInstance().destroySingleton();
+        }
+
     }
+
 }
