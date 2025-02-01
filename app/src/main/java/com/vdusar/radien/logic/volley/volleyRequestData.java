@@ -49,13 +49,13 @@ public class volleyRequestData
     }
 
 
-    public void findCountryRadios(Integer hm, Integer pg,String cnt,VolleyCallback callme) {
+    public void findCountryRadios(Integer hm, Integer pg,String cnt,VolleyCallbackObj callme) {
         String how_many = Integer.toString(hm);
         String which_page = Integer.toString(pg);
 
         String data_url = "https://zeno.fm/api/stations/?query=&limit=" + how_many + "&genre=&country="+cnt+"&language=&page=" + which_page;
 
-        sendArrayRequest(data_url, callme);
+        sendRequestObj(data_url, callme);
     }
 
     public void sendArrayRequest(String url, volleyRequestData.VolleyCallback callback) {

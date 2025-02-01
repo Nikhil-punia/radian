@@ -4,11 +4,14 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -52,7 +55,7 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
 
-    public String apiID = null;
+    public String apiID = "notnecessary";
     public DownloadManagerUtil dms;
     private FloatingActionButton menuBtn;
     private FrameLayout menuFrame;
@@ -173,12 +176,15 @@ public class MainActivity extends AppCompatActivity {
                     final Pattern pattern = Pattern.compile("_buildManifest.js\" defer=\"\"></script><script src=\"/_next/static/(.+?)/_ssgManifest.js\" defer=\"\"></script>", Pattern.DOTALL);
                     final Matcher matcher = pattern.matcher(resp.body().string());
                     matcher.find();
-                    apiID = Objects.requireNonNull(matcher.group(0)).split("/_next/static/")[1].split("/")[0];
+                    apiID = Objects.requireNonNull(matcher.group(0)).split("/_next/static/")[1].split("/")[0] ;
                     resp.body().close();
                     startRadio();
-                }catch (IOException e){
-                   // Toast.makeText(getApplicationContext(), "Can`t Connect To The Server! Try Later", Toast.LENGTH_SHORT).show();
-                    System.out.println(e);
+                }catch (Exception e){
+                    new Handler(Looper.getMainLooper()).post(()->{
+                        TabLayout tabl = findViewById(R.id.tab_l);
+                        Objects.requireNonNull(tabl.getTabAt(1)).view.performClick();
+                        Toast.makeText(getApplicationContext(), "Can`t Connect To The Server! Try Later", Toast.LENGTH_SHORT).show();
+                    });
                 }
             }).start();
     }else {

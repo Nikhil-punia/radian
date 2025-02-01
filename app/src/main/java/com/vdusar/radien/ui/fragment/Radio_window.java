@@ -25,16 +25,15 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.common.util.concurrent.MoreExecutors;
 import com.vdusar.radien.R;
 import com.vdusar.radien.logic.player.PlayerContent;
 import com.vdusar.radien.logic.player.PlayerService;
 import com.vdusar.radien.logic.volley.volleyRequestData;
 import com.vdusar.radien.ui.adapter.Radio_adapter;
-import com.google.common.util.concurrent.MoreExecutors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,7 +74,7 @@ public class Radio_window extends Fragment {
 
     public void loopAndSaveChannels(JSONArray stations,int index) throws JSONException, IOException {
 
-        String url_f = "https://zeno.fm/_next/data/"+apiId+"/radio/" + stations.getJSONObject(index).getString("url").split("/")[4] + ".json";
+        String url_f = "https://zeno.fm/api/stations/" + stations.getJSONObject(index).getString("slug");
 
             rq.sendRequestObj(url_f, (result) -> {
                 try {
@@ -85,12 +84,12 @@ public class Radio_window extends Fragment {
                     }
 
                     if (result != null && dataSet != null) {
-                        JSONObject b_j = result.getJSONObject("pageProps").getJSONObject("station");
-                        JSONObject b_o = result.getJSONObject("pageProps").getJSONObject("meta");
+                        String b_j = result.getString("streamName");
+                        String b_o = result.getString("title");
 
-                        String uri_t = (b_j.getString("streamURL"));
+                        String uri_t = result.getString("streamURL");
 
-                        PlayerContent plc = new PlayerContent(b_j.getString("streamName"),b_j.getString("name"), b_j.getString("logo"), b_j.getString("background"), b_o.getString("description"), b_j.getJSONArray("languages"), b_j.getString("genre"), stations.getJSONObject(index).getString("name"), uri_t, stations.getJSONObject(index).getString("url"));
+                        PlayerContent plc = new PlayerContent(b_j,b_o, result.getString("logo"),  result.getString("cover"), "Disc Func is Pending", result.getJSONArray("languages"), result.getString("genre"), b_o, uri_t, uri_t);
                         addMediaItems(plc);
                         dataSet.add(plc);
                     }
@@ -219,8 +218,9 @@ public class Radio_window extends Fragment {
                 this.rq.cancelAllRequest();
                 selectButton(v);
 
-                rq.findCountryRadios(result_on, finalI,"India", (result) -> {
+                rq.findCountryRadios(result_on, finalI,"India", (res) -> {
                     try {
+                        JSONArray result = res.getJSONArray("data");
                         Position = 0;
                         progBar.setProgress(0);
                         progBar.setVisibility(View.VISIBLE);
