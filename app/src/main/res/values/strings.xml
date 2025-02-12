@@ -20,4 +20,5 @@
     <string name="download_noti_name">Downloading Please Wait</string>
     <string name="download_noti_disc">Radio is Downloading The Media Items</string>
     <string name="coming_soon_string">Coming Soon</string>
+    <string name="unknown_error">Error,Please Try Later</string>
 </resources>

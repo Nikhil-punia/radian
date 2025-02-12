@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
@@ -73,6 +74,8 @@ public class Radio_window extends Fragment {
     }
 
     public void loopAndSaveChannels(JSONArray stations,int index) throws JSONException, IOException {
+
+        if (stations == null) {return;}
 
         String url_f = "https://zeno.fm/api/stations/" + stations.getJSONObject(index).getString("slug");
 
@@ -220,6 +223,11 @@ public class Radio_window extends Fragment {
 
                 rq.findCountryRadios(result_on, finalI,"India", (res) -> {
                     try {
+                        if (res == null) {
+
+                            Toast.makeText(this.ctx, R.string.unknown_error, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         JSONArray result = res.getJSONArray("data");
                         Position = 0;
                         progBar.setProgress(0);
