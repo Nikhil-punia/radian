@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">exp</string>
+    <string name="app_name">Radien</string>
     <string name="title_activity_navactivity">navactivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -12,4 +12,12 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="channel">Channel</string>
+    <string name="title_value">Nothing Playing</string>
+    <string name="unknown_title">Unknown Title</string>
+    <string name="download_noti_name">Downloading Please Wait</string>
+    <string name="download_noti_disc">Radio is Downloading The Media Items</string>
+    <string name="coming_soon_string">Coming Soon</string>
 </resources>

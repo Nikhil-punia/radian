@@ -2,12 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+
+
 android {
-    namespace = "com.example.exp"
+    namespace = "com.vdusar.radien"
     compileSdk = 34
 
+
+
     defaultConfig {
-        applicationId = "com.example.exp"
+        applicationId = "com.vdusar.radien"
         minSdk = 23
         targetSdk = 34
         versionCode = 1
@@ -15,6 +19,14 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+//    sourceSets {
+//        getByName("main") {
+//            jniLibs.srcDirs("/src/main/jniLibs")
+//        }
+//
+//    }
+
 
     buildTypes {
         release {
@@ -34,8 +46,8 @@ android {
     }
 }
 
-dependencies {
 
+dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -52,9 +64,14 @@ dependencies {
     implementation(libs.media3.session)
     implementation(libs.media3.exoplayer.hls)
     implementation(libs.volley)
+    implementation(libs.gradle)
+    implementation(libs.com.chaquo.python.gradle.plugin)
+    implementation(libs.okhttp.sse)
+    implementation(libs.work.runtime)
+    implementation(libs.google.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.cardview)
-
+    implementation(libs.oksse)
 }

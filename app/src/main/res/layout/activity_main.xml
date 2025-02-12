@@ -9,12 +9,28 @@
     android:layout_margin="0dp"
     android:padding="0dp">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/menubase_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:clickable="true"
+        app:backgroundTint="?attr/colorPrimaryVariant"
+        app:layout_constraintBottom_toBottomOf="@+id/dview"
+        app:layout_constraintEnd_toEndOf="@+id/dview"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sbar"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/baseline_menu_24" />
+
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/materialToolbar2"
+        android:id="@+id/sbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="1.5dp"
-        android:background="?attr/colorPrimary"
+        android:background="?attr/colorSurfaceContainerLowest"
+        android:elevation="10dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toTopOf="@+id/dview"
@@ -24,9 +40,9 @@
         app:title="Radio Centre"
         app:titleCentered="true"
         app:titleTextAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:titleTextColor="@color/color_fixed_white" />
+        app:titleTextColor="?attr/colorPrimary" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:id="@+id/dview"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -35,33 +51,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/materialToolbar2">
+        app:layout_constraintTop_toBottomOf="@+id/sbar">
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="startRadio"
-            android:text="Start Radio"
-            app:cornerRadius="10dp"
-            app:icon="@drawable/baseline_radio_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/menubase_util"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="80dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dview"
+        app:layout_constraintEnd_toEndOf="@+id/dview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sbar" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_l"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?attr/colorSurfaceContainerLow"
+        android:background="?attr/colorSurfaceContainerLowest"
+        android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dview"
-        app:tabPaddingBottom="20dp"
-        app:tabPaddingTop="15dp">
+        app:tabPaddingBottom="5dp"
+        app:tabPaddingTop="5dp">
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/tab_p"
@@ -74,14 +92,14 @@
             android:id="@+id/tab_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@android:drawable/ic_menu_mapmode"
+            android:icon="@drawable/baseline_air_24"
             android:tag="Second Tab" />
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/tab_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:icon="@android:drawable/ic_menu_edit"
+            android:icon="@drawable/baseline_download_24"
             android:tag="Third Tab" />
     </com.google.android.material.tabs.TabLayout>
 

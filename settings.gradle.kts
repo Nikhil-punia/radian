@@ -16,9 +16,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://www.jitpack.io")
     }
 }
 
-rootProject.name = "exp"
+rootProject.name = "radien"
 include(":app")
  
